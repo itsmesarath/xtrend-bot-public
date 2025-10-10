@@ -18,7 +18,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
     // Create chart with v4 API - TradingView style
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: isFullscreen ? window.innerHeight * 0.8 : 500,
+      height: isFullscreen ? window.innerHeight * 0.8 : 600,
       layout: {
         backgroundColor: '#0f172a',
         textColor: '#94a3b8',
