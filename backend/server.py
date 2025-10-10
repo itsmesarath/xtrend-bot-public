@@ -466,32 +466,72 @@ async def restart_data_stream():
 # ==================== CANDLE AGGREGATION ====================
 
 def aggregate_candles(candles: list, timeframe_minutes: int) -> list:
-    """Aggregate 1-minute candles into higher timeframes"""
+    """Aggregate 1-minute candles into higher timeframes with proper time bucketing"""
     if not candles or timeframe_minutes == 1:
         return candles
     
+    if len(candles) == 0:
+        return []
+    
     aggregated = []
-    buffer = []
+    
+    # Group candles by timeframe buckets
+    current_bucket = []
+    bucket_start_time = None
     
     for candle in candles:
-        buffer.append(candle)
+        candle_time = candle['timestamp']
         
-        # Check if we have enough candles for aggregation
-        if len(buffer) >= timeframe_minutes:
-            # Create aggregated candle
-            agg_candle = {
-                "symbol": candle['symbol'],
-                "timestamp": buffer[0]['timestamp'],  # Use first candle's timestamp
-                "open": buffer[0]['open'],
-                "high": max(c['high'] for c in buffer),
-                "low": min(c['low'] for c in buffer),
-                "close": buffer[-1]['close'],
-                "volume": sum(c['volume'] for c in buffer),
-                "buy_volume": sum(c.get('buy_volume', 0) for c in buffer),
-                "sell_volume": sum(c.get('sell_volume', 0) for c in buffer)
-            }
-            aggregated.append(agg_candle)
-            buffer = []
+        # Get the bucket start time for this candle
+        if isinstance(candle_time, str):
+            candle_time = datetime.fromisoformat(candle_time.replace('Z', '+00:00'))
+        
+        # Calculate which bucket this candle belongs to
+        minutes_since_epoch = int(candle_time.timestamp() / 60)
+        bucket_minutes = (minutes_since_epoch // timeframe_minutes) * timeframe_minutes
+        bucket_time = datetime.fromtimestamp(bucket_minutes * 60, tz=timezone.utc)
+        
+        # Start new bucket if needed
+        if bucket_start_time is None:
+            bucket_start_time = bucket_time
+            current_bucket = [candle]
+        elif bucket_time == bucket_start_time:
+            # Same bucket, add candle
+            current_bucket.append(candle)
+        else:
+            # New bucket started, aggregate previous bucket
+            if current_bucket:
+                agg_candle = {
+                    "symbol": current_bucket[0]['symbol'],
+                    "timestamp": bucket_start_time,
+                    "open": current_bucket[0]['open'],
+                    "high": max(c['high'] for c in current_bucket),
+                    "low": min(c['low'] for c in current_bucket),
+                    "close": current_bucket[-1]['close'],
+                    "volume": sum(c['volume'] for c in current_bucket),
+                    "buy_volume": sum(c.get('buy_volume', 0) for c in current_bucket),
+                    "sell_volume": sum(c.get('sell_volume', 0) for c in current_bucket)
+                }
+                aggregated.append(agg_candle)
+            
+            # Start new bucket
+            bucket_start_time = bucket_time
+            current_bucket = [candle]
+    
+    # Don't forget the last bucket
+    if current_bucket and len(current_bucket) >= timeframe_minutes * 0.5:  # At least 50% complete
+        agg_candle = {
+            "symbol": current_bucket[0]['symbol'],
+            "timestamp": bucket_start_time,
+            "open": current_bucket[0]['open'],
+            "high": max(c['high'] for c in current_bucket),
+            "low": min(c['low'] for c in current_bucket),
+            "close": current_bucket[-1]['close'],
+            "volume": sum(c['volume'] for c in current_bucket),
+            "buy_volume": sum(c.get('buy_volume', 0) for c in current_bucket),
+            "sell_volume": sum(c.get('sell_volume', 0) for c in current_bucket)
+        }
+        aggregated.append(agg_candle)
     
     return aggregated
 
