@@ -129,25 +129,104 @@ binance_simulator = None  # Fallback simulator
 # ==================== BINANCE DATA ====================
 
 class BinanceDataFetcher:
-    \"\"\"Real Binance data fetcher using API\"\"\"
+    """Real Binance data fetcher using API"""
     def __init__(self, api_key: str, api_secret: str):
         self.api_key = api_key
         self.api_secret = api_secret
         self.client = None
         self.bm = None
-        self.symbols = [\"BTCUSDT\", \"ETHUSDT\", \"LTCUSDT\", \"DOGEUSDT\"]
+        self.symbols = ["BTCUSDT", "ETHUSDT", "LTCUSDT", "DOGEUSDT"]
         self.running = False
         self.tasks = []
         
     async def start(self):
-        \"\"\"Initialize Binance client and start streaming\"\"\"
+        """Initialize Binance client and start streaming"""
         try:
             self.client = await AsyncClient.create(self.api_key, self.api_secret)
             self.bm = BinanceSocketManager(self.client)
             self.running = True
             
-            logger.info(\"Connected to Binance API - Starting real data stream...\")\n            
-            # Start kline streams for each symbol\n            for symbol in self.symbols:\n                task = asyncio.create_task(self.stream_klines(symbol))\n                self.tasks.append(task)\n                \n                task = asyncio.create_task(self.stream_trades(symbol))\n                self.tasks.append(task)\n                \n        except Exception as e:\n            logger.error(f\"Failed to connect to Binance: {e}\")\n            self.running = False\n            raise\n    \n    async def stream_klines(self, symbol: str):\n        \"\"\"Stream 1-minute candles for a symbol\"\"\"\n        try:\n            async with self.bm.kline_socket(symbol=symbol, interval='1m') as stream:\n                while self.running:\n                    res = await stream.recv()\n                    kline = res['k']\n                    \n                    # Only process closed candles\n                    if kline['x']:  # is candle closed\n                        candle = {\n                            \"symbol\": symbol,\n                            \"timestamp\": datetime.fromtimestamp(kline['T'] / 1000, tz=timezone.utc),\n                            \"open\": float(kline['o']),\n                            \"high\": float(kline['h']),\n                            \"low\": float(kline['l']),\n                            \"close\": float(kline['c']),\n                            \"volume\": float(kline['v']),\n                            \"buy_volume\": float(kline['V']),  # Taker buy base asset volume\n                            \"sell_volume\": float(kline['v']) - float(kline['V'])\n                        }\n                        \n                        market_store.candles[symbol].append(candle)\n                        \n                        # Calculate volume profile and order flow\n                        await calculate_volume_profile(symbol)\n                        await calculate_order_flow(symbol)\n                        \n                        # Broadcast update\n                        await broadcast_market_update(symbol)\n                        \n                        # AI analysis if enabled\n                        if market_store.ai_enabled:\n                            await analyze_with_ai(symbol, candle)\n                            \n        except Exception as e:\n            logger.error(f\"Error in kline stream for {symbol}: {e}\")\n    \n    async def stream_trades(self, symbol: str):\n        \"\"\"Stream individual trades for order flow analysis\"\"\"\n        try:\n            async with self.bm.trade_socket(symbol=symbol) as stream:\n                while self.running:\n                    res = await stream.recv()\n                    \n                    trade = {\n                        \"symbol\": symbol,\n                        \"timestamp\": datetime.fromtimestamp(res['T'] / 1000, tz=timezone.utc),\n                        \"price\": float(res['p']),\n                        \"quantity\": float(res['q']),\n                        \"side\": \"buy\" if res['m'] else \"sell\",  # m = is buyer market maker\n                        \"is_big_print\": False  # Will be determined in order flow calc\n                    }\n                    \n                    market_store.trades[symbol].append(trade)\n                    \n        except Exception as e:\n            logger.error(f\"Error in trade stream for {symbol}: {e}\")\n    \n    async def stop(self):\n        \"\"\"Stop all streams and close client\"\"\"\n        self.running = False\n        for task in self.tasks:\n            task.cancel()\n        if self.client:\n            await self.client.close_connection()\n\nclass BinanceDataSimulator:
+            logger.info("Connected to Binance API - Starting real data stream...")
+            
+            # Start kline streams for each symbol
+            for symbol in self.symbols:
+                task = asyncio.create_task(self.stream_klines(symbol))
+                self.tasks.append(task)
+                
+                task = asyncio.create_task(self.stream_trades(symbol))
+                self.tasks.append(task)
+                
+        except Exception as e:
+            logger.error(f"Failed to connect to Binance: {e}")
+            self.running = False
+            raise
+    
+    async def stream_klines(self, symbol: str):
+        """Stream 1-minute candles for a symbol"""
+        try:
+            async with self.bm.kline_socket(symbol=symbol, interval='1m') as stream:
+                while self.running:
+                    res = await stream.recv()
+                    kline = res['k']
+                    
+                    # Only process closed candles
+                    if kline['x']:  # is candle closed
+                        candle = {
+                            "symbol": symbol,
+                            "timestamp": datetime.fromtimestamp(kline['T'] / 1000, tz=timezone.utc),
+                            "open": float(kline['o']),
+                            "high": float(kline['h']),
+                            "low": float(kline['l']),
+                            "close": float(kline['c']),
+                            "volume": float(kline['v']),
+                            "buy_volume": float(kline['V']),  # Taker buy base asset volume
+                            "sell_volume": float(kline['v']) - float(kline['V'])
+                        }
+                        
+                        market_store.candles[symbol].append(candle)
+                        
+                        # Calculate volume profile and order flow
+                        await calculate_volume_profile(symbol)
+                        await calculate_order_flow(symbol)
+                        
+                        # Broadcast update
+                        await broadcast_market_update(symbol)
+                        
+                        # AI analysis if enabled
+                        if market_store.ai_enabled:
+                            await analyze_with_ai(symbol, candle)
+                            
+        except Exception as e:
+            logger.error(f"Error in kline stream for {symbol}: {e}")
+    
+    async def stream_trades(self, symbol: str):
+        """Stream individual trades for order flow analysis"""
+        try:
+            async with self.bm.trade_socket(symbol=symbol) as stream:
+                while self.running:
+                    res = await stream.recv()
+                    
+                    trade = {
+                        "symbol": symbol,
+                        "timestamp": datetime.fromtimestamp(res['T'] / 1000, tz=timezone.utc),
+                        "price": float(res['p']),
+                        "quantity": float(res['q']),
+                        "side": "buy" if res['m'] else "sell",  # m = is buyer market maker
+                        "is_big_print": False  # Will be determined in order flow calc
+                    }
+                    
+                    market_store.trades[symbol].append(trade)
+                    
+        except Exception as e:
+            logger.error(f"Error in trade stream for {symbol}: {e}")
+    
+    async def stop(self):
+        """Stop all streams and close client"""
+        self.running = False
+        for task in self.tasks:
+            task.cancel()
+        if self.client:
+            await self.client.close_connection()\n\nclass BinanceDataSimulator:
     def __init__(self):
         self.symbols = ["BTCUSDT", "ETHUSDT", "LTCUSDT", "DOGEUSDT"]
         self.base_prices = {
