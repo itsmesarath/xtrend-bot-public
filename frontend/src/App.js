@@ -332,15 +332,66 @@ function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-6">
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="bg-slate-800/50 border border-slate-700">
-            <TabsTrigger value="dashboard" data-testid="dashboard-tab">Dashboard</TabsTrigger>
-            <TabsTrigger value="signals" data-testid="signals-tab">Signals</TabsTrigger>
-            <TabsTrigger value="analysis" data-testid="analysis-tab">Analysis</TabsTrigger>
-          </TabsList>
+        {!isConfigured ? (
+          /* Configuration Required Screen */
+          <div className="flex items-center justify-center min-h-[600px]">
+            <Card className="bg-slate-800/50 border-slate-700 max-w-2xl w-full">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center text-white flex items-center justify-center gap-3">
+                  <Settings className="w-8 h-8 text-cyan-400" />
+                  Configuration Required
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Alert className="bg-amber-500/10 border-amber-500/50">
+                  <AlertCircle className="w-5 h-5 text-amber-400" />
+                  <AlertDescription className="text-amber-300">
+                    The bot requires Binance API keys to function. No simulated data is available.
+                  </AlertDescription>
+                </Alert>
 
-          {/* Dashboard Tab */}
-          <TabsContent value="dashboard" className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-white font-semibold">To get started:</h3>
+                  <ol className="list-decimal list-inside space-y-3 text-slate-300">
+                    <li>Obtain your Binance API credentials (read-only permission)</li>
+                    <li>Click the "Configure" button in the top right</li>
+                    <li>Enter your Binance API Key and Secret</li>
+                    <li>(Optional) Add OpenRouter API key for AI signal generation</li>
+                    <li>Save and the bot will start streaming live market data</li>
+                  </ol>
+                </div>
+
+                <div className="bg-cyan-500/10 border border-cyan-500/50 rounded-lg p-4 space-y-2">
+                  <h4 className="text-cyan-400 font-semibold text-sm">What you'll get:</h4>
+                  <ul className="text-sm text-slate-300 space-y-1">
+                    <li>• Real-time market data for BTC, ETH, LTC, DOGE</li>
+                    <li>• Live volume profile analysis with POC, VAH, VAL</li>
+                    <li>• Order flow metrics (CVD, big prints, imbalances)</li>
+                    <li>• AI-powered trading signals (when AI enabled)</li>
+                    <li>• Interactive charts with marked levels</li>
+                  </ul>
+                </div>
+
+                <Button 
+                  onClick={() => setConfigOpen(true)}
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white h-12 text-lg"
+                >
+                  <Settings className="w-5 h-5 mr-2" />
+                  Configure API Keys
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <Tabs defaultValue="dashboard" className="space-y-6">
+            <TabsList className="bg-slate-800/50 border border-slate-700">
+              <TabsTrigger value="dashboard" data-testid="dashboard-tab">Dashboard</TabsTrigger>
+              <TabsTrigger value="signals" data-testid="signals-tab">Signals</TabsTrigger>
+              <TabsTrigger value="analysis" data-testid="analysis-tab">Analysis</TabsTrigger>
+            </TabsList>
+
+            {/* Dashboard Tab */}
+            <TabsContent value="dashboard" className="space-y-6">
             {/* Market Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {SYMBOLS.map(symbol => {
