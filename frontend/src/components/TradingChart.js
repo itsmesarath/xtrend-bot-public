@@ -3,7 +3,7 @@ import { createChart } from 'lightweight-charts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
+const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeChange }) => {
   const chartContainerRef = useRef();
   const chartRef = useRef();
   const candleSeriesRef = useRef();
@@ -11,6 +11,13 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   const priceLineRefs = useRef([]);
   const [timeframe, setTimeframe] = useState('1m');
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleTimeframeChange = (tf) => {
+    setTimeframe(tf);
+    if (onTimeframeChange) {
+      onTimeframeChange(tf);
+    }
+  };
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
