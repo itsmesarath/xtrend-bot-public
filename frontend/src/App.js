@@ -453,6 +453,26 @@ function App() {
               })}
             </div>
 
+            {/* Trading Chart */}
+            {marketData[selectedSymbol] && marketData[selectedSymbol].candles && (
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <BarChart3 className="w-5 h-5" />
+                    {selectedSymbol} - Real-Time Chart with Market Levels
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TradingChart 
+                    symbol={selectedSymbol}
+                    data={marketData[selectedSymbol].candles || []}
+                    volumeProfile={marketData[selectedSymbol].volume_profile}
+                    currentPrice={marketData[selectedSymbol].price}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
             {/* Selected Symbol Details */}
             {marketData[selectedSymbol] && (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
