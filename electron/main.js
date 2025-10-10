@@ -127,20 +127,26 @@ function createWindow() {
 // App lifecycle
 app.whenReady().then(async () => {
   try {
-    // Start services in sequence
-    await startMongoDB();
-    console.log('MongoDB started successfully');
+    // Check MongoDB availability
+    const mongoAvailable = await checkMongoDB();
+    if (mongoAvailable) {
+      console.log('MongoDB is available');
+    } else {
+      console.log('MongoDB not available - will use in-memory storage');
+    }
     
+    // Start backend
     await startBackend();
     console.log('Backend started successfully');
     
-    // Wait a bit for backend to fully initialize
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Wait for backend to fully initialize
+    await new Promise(resolve => setTimeout(resolve, 3000));
     
     createWindow();
   } catch (error) {
     console.error('Failed to start application:', error);
-    app.quit();
+    // Still create window to show error to user
+    createWindow();
   }
 
   app.on('activate', () => {
