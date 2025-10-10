@@ -188,9 +188,8 @@ class BinanceDataFetcher:
                         
                         market_store.candles[symbol].append(candle)
                         
-                        # Calculate all three volume profiles and order flow
+                        # Calculate both volume profiles and order flow
                         await calculate_volume_profile(symbol, 50, "current")  # Last 50 candles
-                        await calculate_volume_profile(symbol, 60, "1h")        # Last 1 hour (60 candles)
                         await calculate_volume_profile(symbol, -1, "day")       # All candles (full day)
                         await calculate_order_flow(symbol)
                         
@@ -399,9 +398,8 @@ class BinanceDataSimulator:
                         candle = await self.generate_candle(symbol)
                         market_store.candles[symbol].append(candle)
                         
-                        # Calculate all three volume profiles and order flow
+                        # Calculate both volume profiles and order flow
                         await calculate_volume_profile(symbol, 50, "current")  # Last 50 candles
-                        await calculate_volume_profile(symbol, 60, "1h")        # Last 1 hour (60 candles)
                         await calculate_volume_profile(symbol, -1, "day")       # All candles (full day)
                         await calculate_order_flow(symbol)
                         
