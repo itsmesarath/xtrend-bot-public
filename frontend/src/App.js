@@ -306,10 +306,12 @@ function App() {
                       <p className="text-xs text-slate-400">Using Llama 3.3 70B Instruct</p>
                     </div>
                     
-                    <Alert className="bg-cyan-500/10 border-cyan-500/50">
-                      <AlertCircle className="w-4 h-4 text-cyan-400" />
-                      <AlertDescription className="text-cyan-300 text-xs">
-                        Currently running in demo mode with simulated data. Configure your Binance API keys for live trading data.
+                    <Alert className={configStatus.data_source === 'live' ? "bg-emerald-500/10 border-emerald-500/50" : "bg-amber-500/10 border-amber-500/50"}>
+                      <AlertCircle className={`w-4 h-4 ${configStatus.data_source === 'live' ? 'text-emerald-400' : 'text-amber-400'}`} />
+                      <AlertDescription className={`text-xs ${configStatus.data_source === 'live' ? 'text-emerald-300' : 'text-amber-300'}`}>
+                        {configStatus.data_source === 'live' 
+                          ? '✅ Connected to Binance live market data' 
+                          : '⚡ Demo mode: Using simulated data. Add Binance API keys for real-time market data.'}
                       </AlertDescription>
                     </Alert>
                     
