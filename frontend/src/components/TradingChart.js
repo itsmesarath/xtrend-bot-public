@@ -186,24 +186,99 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
   return (
     <div className="relative">
-      <div ref={chartContainerRef} className="rounded-lg overflow-hidden border border-slate-700" />
+      {/* Chart Controls - TradingView Style */}
+      <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
+        {/* Symbol Badge */}
+        <Badge className="bg-slate-800/90 backdrop-blur-sm border-slate-700 text-white px-3 py-1.5 text-sm font-semibold">
+          {symbol}
+        </Badge>
+        
+        {/* Timeframe Selector */}
+        <div className="flex items-center gap-1 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-1">
+          {['1m', '5m', '15m', '1h'].map((tf) => (
+            <button
+              key={tf}
+              onClick={() => setTimeframe(tf)}
+              className={`px-3 py-1 text-xs rounded transition-all ${
+                timeframe === tf
+                  ? 'bg-cyan-500 text-white font-semibold'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-700'
+              }`}
+              data-testid={`timeframe-${tf}`}
+            >
+              {tf}
+            </button>
+          ))}
+        </div>
+
+        {/* Price Info */}
+        {data && data.length > 0 && (
+          <div className="bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg px-3 py-1.5 text-xs">
+            <span className="text-slate-400">Price: </span>
+            <span className="text-white font-semibold">${data[data.length - 1]?.close?.toFixed(2)}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Chart Container */}
+      <div ref={chartContainerRef} className="rounded-lg overflow-hidden border border-slate-700" style={{ height: isFullscreen ? '80vh' : '500px' }} />
       
-      {/* Legend */}
-      <div className="absolute top-4 left-4 bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700 text-xs space-y-1">
-        <div className="font-semibold text-white mb-2">{symbol}</div>
+      {/* Legend - Bottom Left */}
+      <div className="absolute bottom-4 left-4 bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700 text-xs space-y-1.5">
+        <div className="font-semibold text-cyan-400 mb-2 text-sm">Volume Profile Levels</div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-0.5 bg-cyan-500"></div>
-          <span className="text-slate-300">POC - Point of Control</span>
+          <div className="w-4 h-0.5 bg-cyan-500"></div>
+          <span className="text-slate-300">POC</span>
+          {volumeProfile?.poc && (
+            <span className="text-slate-400 ml-1">${volumeProfile.poc.toFixed(2)}</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-0.5 bg-slate-500 border-t-2 border-dashed"></div>
-          <span className="text-slate-300">VAH/VAL - Value Area</span>
+          <div className="w-4 h-0.5 bg-slate-500 border-t border-dashed"></div>
+          <span className="text-slate-300">VAH</span>
+          {volumeProfile?.vah && (
+            <span className="text-slate-400 ml-1">${volumeProfile.vah.toFixed(2)}</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-0.5 bg-orange-500 border-t-2 border-dashed"></div>
-          <span className="text-slate-300">LVN - Low Volume Nodes</span>
+          <div className="w-4 h-0.5 bg-slate-500 border-t border-dashed"></div>
+          <span className="text-slate-300">VAL</span>
+          {volumeProfile?.val && (
+            <span className="text-slate-400 ml-1">${volumeProfile.val.toFixed(2)}</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-0.5 bg-orange-500 border-t border-dashed"></div>
+          <span className="text-slate-300">LVN</span>
+          <span className="text-slate-400 ml-1">Low Volume</span>
         </div>
       </div>
+
+      {/* Chart Info - Top Right */}
+      {data && data.length > 0 && (
+        <div className="absolute top-3 right-3 z-10 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-3 text-xs space-y-1">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-slate-400">O</span>
+            <span className="text-white font-mono">${data[data.length - 1]?.open?.toFixed(2)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-slate-400">H</span>
+            <span className="text-emerald-400 font-mono">${data[data.length - 1]?.high?.toFixed(2)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-slate-400">L</span>
+            <span className="text-red-400 font-mono">${data[data.length - 1]?.low?.toFixed(2)}</span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-slate-400">C</span>
+            <span className={`font-mono font-semibold ${
+              data[data.length - 1]?.close >= data[data.length - 1]?.open ? 'text-emerald-400' : 'text-red-400'
+            }`}>
+              ${data[data.length - 1]?.close?.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
