@@ -125,6 +125,7 @@ market_store = MarketDataStore()
 api_config = APIConfig()
 binance_fetcher = None  # Will be initialized when API keys are provided
 binance_simulator = None  # Fallback simulator
+use_demo_mode = True  # Toggle between demo and live mode
 
 # ==================== BINANCE DATA ====================
 
