@@ -642,7 +642,14 @@ async def calculate_volume_profile(symbol: str, num_candles: int = 50, profile_t
             total_volume=total_volume
         )
         
-        market_store.volume_profiles[symbol] = profile
+        # Store in appropriate location based on profile type
+        if profile_type == "1h":
+            market_store.volume_profiles_1h[symbol] = profile
+        elif profile_type == "day":
+            market_store.volume_profiles_day[symbol] = profile
+        else:
+            market_store.volume_profiles[symbol] = profile
+        
         return profile
         
     except Exception as e:
