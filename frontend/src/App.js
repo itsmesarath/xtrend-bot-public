@@ -599,19 +599,22 @@ const VolumeProfileChart = ({ data }) => {
 
       {/* Volume Bars */}
       <ScrollArea className="h-64">
-        <div className="space-y-1">
+        <div className="space-y-1 relative">
           {levels.slice(0, 30).map((level, idx) => {
             const widthPercent = (level.volume / maxVolume) * 100;
+            const isCurrentPrice = currentPrice && Math.abs(level.price - currentPrice) < (currentPrice * 0.001); // Within 0.1%
+            
             return (
-              <div key={idx} className="flex items-center gap-2 text-xs">
+              <div key={idx} className="flex items-center gap-2 text-xs relative">
                 <span className={`w-16 text-right ${
+                  isCurrentPrice ? 'text-yellow-400 font-bold' :
                   level.is_poc ? 'text-cyan-400 font-bold' : 
                   level.is_lvn ? 'text-orange-400' : 
                   level.is_hvn ? 'text-emerald-400' : 'text-slate-400'
                 }`}>
                   ${level.price.toFixed(2)}
                 </span>
-                <div className="flex-1 bg-slate-900/50 rounded-full h-4 overflow-hidden">
+                <div className="flex-1 bg-slate-900/50 rounded-full h-4 overflow-hidden relative">
                   <div 
                     className={`h-full transition-all ${
                       level.is_poc ? 'bg-cyan-500' : 
@@ -620,8 +623,16 @@ const VolumeProfileChart = ({ data }) => {
                     }`}
                     style={{ width: `${widthPercent}%` }}
                   />
+                  {isCurrentPrice && (
+                    <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse" />
+                  )}
                 </div>
                 <span className="w-12 text-slate-500 text-xs">{level.volume.toFixed(0)}</span>
+                {isCurrentPrice && (
+                  <span className="absolute -right-20 text-yellow-400 font-semibold text-xs whitespace-nowrap">
+                    ← Current
+                  </span>
+                )}
               </div>
             );
           })}
