@@ -14,6 +14,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
 
   const handleTimeframeChange = (tf) => {
     setTimeframe(tf);
+    initialFitDone.current = false; // Reset fit flag for new timeframe data
     if (onTimeframeChange) {
       onTimeframeChange(tf);
     }
