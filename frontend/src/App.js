@@ -573,6 +573,11 @@ const VolumeProfileChart = ({ data }) => {
 
   const { poc, vah, val, levels } = data.volume_profile;
   const maxVolume = Math.max(...levels.map(l => l.volume));
+  
+  // Get current price from latest candle
+  const currentPrice = data.candles && data.candles.length > 0 
+    ? data.candles[data.candles.length - 1].close 
+    : data.price;
 
   return (
     <div className="space-y-4">
