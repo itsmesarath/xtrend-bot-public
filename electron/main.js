@@ -165,16 +165,15 @@ app.on('window-all-closed', () => {
 app.on('before-quit', () => {
   console.log('Shutting down services...');
   
-  // Kill backend
+  // Kill backend process
   if (backendProcess) {
-    backendProcess.kill('SIGTERM');
-    setTimeout(() => backendProcess.kill('SIGKILL'), 5000);
-  }
-  
-  // Kill MongoDB
-  if (mongoProcess) {
-    mongoProcess.kill('SIGTERM');
-    setTimeout(() => mongoProcess.kill('SIGKILL'), 5000);
+    try {
+      process.platform === 'win32' 
+        ? backendProcess.kill() 
+        : backendProcess.kill('SIGTERM');
+    } catch (error) {
+      console.error('Error killing backend process:', error);
+    }
   }
 });
 
