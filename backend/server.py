@@ -246,9 +246,10 @@ class BinanceDataFetcher:
     def stop_streaming(self):
         self.running = False
 
-binance_simulator = BinanceDataSimulator()
+# ==================== DATA SOURCE MANAGER ====================
 
-# ==================== VOLUME PROFILE CALCULATIONS ====================
+async def start_data_stream():
+    \"\"\"Start appropriate data stream based on configuration\"\"\"\n    global binance_fetcher, binance_simulator\n    \n    if api_config.binance_key and api_config.binance_secret:\n        # Use real Binance data\n        try:\n            logger.info(\"Binance API keys configured - connecting to live data...\")\n            binance_fetcher = BinanceDataFetcher(api_config.binance_key, api_config.binance_secret)\n            await binance_fetcher.start()\n        except Exception as e:\n            logger.error(f\"Failed to connect to Binance API: {e}. Falling back to simulator.\")\n            binance_simulator = BinanceDataSimulator()\n            asyncio.create_task(binance_simulator.start_streaming())\n    else:\n        # Use simulator\n        logger.info(\"No Binance API keys - using simulated data\")\n        binance_simulator = BinanceDataSimulator()\n        asyncio.create_task(binance_simulator.start_streaming())\n\nasync def restart_data_stream():\n    \"\"\"Restart data stream when configuration changes\"\"\"\n    global binance_fetcher, binance_simulator\n    \n    # Stop existing streams\n    if binance_fetcher:\n        await binance_fetcher.stop()\n        binance_fetcher = None\n    \n    if binance_simulator:\n        binance_simulator.stop_streaming()\n        binance_simulator = None\n    \n    # Start new stream\n    await start_data_stream()\n\n# ==================== VOLUME PROFILE CALCULATIONS ====================
 
 async def calculate_volume_profile(symbol: str) -> Optional[VolumeProfile]:
     """Calculate volume profile from candle data"""
