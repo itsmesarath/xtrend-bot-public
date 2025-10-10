@@ -238,36 +238,76 @@ class BinanceDataSimulator:
         self.initialized = False
         
     async def initialize_prices(self):
-        """Fetch real current prices from Binance public API as starting point"""
+        """Fetch real current prices from public APIs (no auth required)"""
         try:
             import aiohttp
+            
+            # Try multiple public APIs to get real current prices
             async with aiohttp.ClientSession() as session:
-                for symbol in self.symbols:
-                    url = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}"
-                    async with session.get(url) as response:
+                # Try CoinGecko first (no rate limit for basic usage)
+                try:
+                    coingecko_ids = {
+                        "BTCUSDT": "bitcoin",
+                        "ETHUSDT": "ethereum",
+                        "LTCUSDT": "litecoin",
+                        "DOGEUSDT": "dogecoin"
+                    }
+                    
+                    ids_str = ",".join(coingecko_ids.values())
+                    url = f"https://api.coingecko.com/api/v3/simple/price?ids={ids_str}&vs_currencies=usd"
+                    
+                    async with session.get(url, timeout=10) as response:
                         if response.status == 200:
                             data = await response.json()
-                            price = float(data['price'])
-                            self.base_prices[symbol] = price
-                            self.current_prices[symbol] = price
-                            logger.info(f"Simulator initialized {symbol} at ${price:.2f}")
-                        else:
-                            # Fallback to default prices
-                            self.base_prices[symbol] = {"BTCUSDT": 103500.0, "ETHUSDT": 3850.0, 
-                                                       "LTCUSDT": 115.0, "DOGEUSDT": 0.38}[symbol]
-                            self.current_prices[symbol] = self.base_prices[symbol]
-            self.initialized = True
+                            for symbol, coin_id in coingecko_ids.items():
+                                if coin_id in data and 'usd' in data[coin_id]:
+                                    price = float(data[coin_id]['usd'])
+                                    self.base_prices[symbol] = price
+                                    self.current_prices[symbol] = price
+                                    logger.info(f"Demo Mode: {symbol} initialized at ${price:.2f} (CoinGecko)")
+                            self.initialized = True
+                            return
+                except Exception as e:
+                    logger.warning(f"CoinGecko API failed: {e}")
+                
+                # Fallback to CryptoCompare
+                try:
+                    symbols_str = "BTC,ETH,LTC,DOGE"
+                    url = f"https://min-api.cryptocompare.com/data/pricemulti?fsyms={symbols_str}&tsyms=USD"
+                    
+                    async with session.get(url, timeout=10) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            mapping = {
+                                "BTC": "BTCUSDT",
+                                "ETH": "ETHUSDT", 
+                                "LTC": "LTCUSDT",
+                                "DOGE": "DOGEUSDT"
+                            }
+                            for coin, symbol in mapping.items():
+                                if coin in data and 'USD' in data[coin]:
+                                    price = float(data[coin]['USD'])
+                                    self.base_prices[symbol] = price
+                                    self.current_prices[symbol] = price
+                                    logger.info(f"Demo Mode: {symbol} initialized at ${price:.2f} (CryptoCompare)")
+                            self.initialized = True
+                            return
+                except Exception as e:
+                    logger.warning(f"CryptoCompare API failed: {e}")
+                
         except Exception as e:
-            logger.warning(f"Could not fetch real prices for simulator: {e}. Using default prices.")
-            # Fallback prices
-            self.base_prices = {
-                "BTCUSDT": 103500.0,
-                "ETHUSDT": 3850.0,
-                "LTCUSDT": 115.0,
-                "DOGEUSDT": 0.38
-            }
-            self.current_prices = self.base_prices.copy()
-            self.initialized = True
+            logger.warning(f"All price APIs failed: {e}")
+        
+        # Ultimate fallback - use reasonable current market prices
+        logger.info("Using fallback prices for demo mode")
+        self.base_prices = {
+            "BTCUSDT": 103500.0,
+            "ETHUSDT": 3850.0,
+            "LTCUSDT": 115.0,
+            "DOGEUSDT": 0.38
+        }
+        self.current_prices = self.base_prices.copy()
+        self.initialized = True
         
     async def generate_candle(self, symbol: str) -> Dict:
         """Generate a realistic candle with volume"""
