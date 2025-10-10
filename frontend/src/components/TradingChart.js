@@ -11,13 +11,21 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
   const priceLineRefs = useRef([]);
   const [timeframe, setTimeframe] = useState('1m');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleTimeframeChange = (tf) => {
+  const handleTimeframeChange = async (tf) => {
+    if (tf === timeframe) return; // Don't reload same timeframe
+    
+    setIsLoading(true);
     setTimeframe(tf);
     initialFitDone.current = false; // Reset fit flag for new timeframe data
+    
     if (onTimeframeChange) {
-      onTimeframeChange(tf);
+      await onTimeframeChange(tf);
     }
+    
+    // Small delay to ensure data is loaded
+    setTimeout(() => setIsLoading(false), 500);
   };
 
   useEffect(() => {
