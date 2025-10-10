@@ -169,13 +169,9 @@ function App() {
     }
   };
 
-  const fetchMarketData = async (symbol, includeHistory = false, timeframe = '1m') => {
+  const fetchMarketData = async (symbol) => {
     try {
-      // Fetch full historical data (all candles for the day) or recent data
-      const endpoint = includeHistory 
-        ? `${API}/market/${symbol}/history?timeframe=${timeframe}` 
-        : `${API}/market/${symbol}?timeframe=${timeframe}&limit=1000`;
-      const response = await axios.get(endpoint);
+      const response = await axios.get(`${API}/market/${symbol}?limit=100`);
       setMarketData(prev => ({
         ...prev,
         [symbol]: response.data
