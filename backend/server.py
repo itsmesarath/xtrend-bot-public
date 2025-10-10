@@ -15,6 +15,10 @@ import json
 import requests
 from collections import defaultdict, deque
 import numpy as np
+import random
+import time
+from binance import AsyncClient, BinanceSocketManager
+from binance.enums import *
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
