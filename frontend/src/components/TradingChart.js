@@ -171,7 +171,12 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
     if (!candleSeriesRef.current || !volumeSeriesRef.current || !data || data.length === 0) return;
 
     try {
-      const candleData = data.map(candle => ({
+      // Sort data by timestamp to ensure ascending order
+      const sortedData = [...data].sort((a, b) => 
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      );
+
+      const candleData = sortedData.map(candle => ({
         time: Math.floor(new Date(candle.timestamp).getTime() / 1000),
         open: candle.open,
         high: candle.high,
@@ -179,7 +184,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
         close: candle.close,
       }));
 
-      const volumeData = data.map(candle => ({
+      const volumeData = sortedData.map(candle => ({
         time: Math.floor(new Date(candle.timestamp).getTime() / 1000),
         value: candle.volume,
         color: candle.close >= candle.open ? '#10b98150' : '#ef444450',  // Semi-transparent
