@@ -145,6 +145,9 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
     };
   }, [timeframe, isFullscreen]);
 
+  // Track if initial fit has been done
+  const initialFitDone = useRef(false);
+
   // Update candle data with better handling
   useEffect(() => {
     if (!candleSeriesRef.current || !volumeSeriesRef.current || !data || data.length === 0) return;
@@ -167,9 +170,10 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
       candleSeriesRef.current.setData(candleData);
       volumeSeriesRef.current.setData(volumeData);
       
-      // Auto-fit content
-      if (chartRef.current) {
+      // Only auto-fit on first load, not on every update
+      if (chartRef.current && !initialFitDone.current) {
         chartRef.current.timeScale().fitContent();
+        initialFitDone.current = true;
       }
     } catch (error) {
       console.error('Error updating chart data:', error);
