@@ -367,6 +367,22 @@ class BinanceDataSimulator:
         self.running = True
         logger.info(f"Starting Binance data simulation with prices: BTC=${self.base_prices.get('BTCUSDT', 0):.0f}")
         
+        # Generate initial historical data (last 6 hours worth = 360 candles at 1m)
+        logger.info("Generating initial historical data (6 hours)...")
+        for symbol in self.symbols:
+            for i in range(360):
+                candle = await self.generate_candle(symbol)
+                # Adjust timestamp to be in the past
+                candle['timestamp'] = datetime.now(timezone.utc) - timedelta(minutes=(360 - i))
+                market_store.candles[symbol].append(candle)
+        
+        logger.info(f"Generated {len(market_store.candles['BTCUSDT'])} historical candles")
+        
+        # Calculate initial volume profile for all symbols
+        for symbol in self.symbols:
+            await calculate_volume_profile(symbol)
+            await calculate_order_flow(symbol)
+        
         while self.running:
             try:
                 for symbol in self.symbols:
