@@ -42,6 +42,8 @@ function App() {
   const [selectedSymbol, setSelectedSymbol] = useState('BTCUSDT');
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
   const [isConfigured, setIsConfigured] = useState(false);
+  const [useDemoMode, setUseDemoMode] = useState(true);
+  const [dataMode, setDataMode] = useState('demo');
   
   const wsRef = useRef(null);
 
