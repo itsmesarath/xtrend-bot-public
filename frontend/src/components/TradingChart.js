@@ -119,8 +119,13 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (chart) {
-        chart.remove();
+      if (chartRef.current) {
+        try {
+          chartRef.current.remove();
+          chartRef.current = null;
+        } catch (e) {
+          // Chart already disposed
+        }
       }
     };
   }, [timeframe, isFullscreen]);
