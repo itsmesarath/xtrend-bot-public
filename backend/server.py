@@ -365,20 +365,17 @@ async def start_data_stream():
     global binance_fetcher, binance_simulator
     
     if api_config.binance_key and api_config.binance_secret:
-        # Use real Binance data
+        # Use real Binance data only
         try:
             logger.info("Binance API keys configured - connecting to live data...")
             binance_fetcher = BinanceDataFetcher(api_config.binance_key, api_config.binance_secret)
             await binance_fetcher.start()
         except Exception as e:
-            logger.error(f"Failed to connect to Binance API: {e}. Falling back to simulator.")
-            binance_simulator = BinanceDataSimulator()
-            asyncio.create_task(binance_simulator.start_streaming())
+            logger.error(f"Failed to connect to Binance API: {e}")
+            raise
     else:
-        # Use simulator
-        logger.info("No Binance API keys - using simulated data")
-        binance_simulator = BinanceDataSimulator()
-        asyncio.create_task(binance_simulator.start_streaming())
+        # No data streaming without API keys
+        logger.info("No Binance API keys configured - bot is idle. Waiting for configuration.")
 
 async def restart_data_stream():
     """Restart data stream when configuration changes"""
