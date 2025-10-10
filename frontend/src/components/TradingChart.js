@@ -107,15 +107,20 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
   // Draw volume profile levels
   useEffect(() => {
-    if (!chartRef.current || !volumeProfile) return;
+    if (!chartRef.current || !candleSeriesRef.current || !volumeProfile) return;
 
-    // Remove old markers
-    markersRef.current.forEach(marker => {
-      if (marker && marker.remove) marker.remove();
+    // Remove old price lines
+    priceLineRefs.current.forEach(line => {
+      if (line && candleSeriesRef.current) {
+        try {
+          candleSeriesRef.current.removePriceLine(line);
+        } catch (e) {
+          // Line already removed
+        }
+      }
     });
-    markersRef.current = [];
+    priceLineRefs.current = [];
 
-    const chart = chartRef.current;
     const series = candleSeriesRef.current;
 
     // Draw POC line
@@ -128,7 +133,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
         axisLabelVisible: true,
         title: 'POC',
       });
-      markersRef.current.push(pocLine);
+      priceLineRefs.current.push(pocLine);
     }
 
     // Draw VAH line
@@ -141,7 +146,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
         axisLabelVisible: true,
         title: 'VAH',
       });
-      markersRef.current.push(vahLine);
+      priceLineRefs.current.push(vahLine);
     }
 
     // Draw VAL line
@@ -154,7 +159,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
         axisLabelVisible: true,
         title: 'VAL',
       });
-      markersRef.current.push(valLine);
+      priceLineRefs.current.push(valLine);
     }
 
     // Draw LVN levels
@@ -169,7 +174,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
           axisLabelVisible: true,
           title: `LVN${idx + 1}`,
         });
-        markersRef.current.push(lvnLine);
+        priceLineRefs.current.push(lvnLine);
       });
     }
 
