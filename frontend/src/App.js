@@ -35,11 +35,13 @@ function App() {
   });
   
   const [aiEnabled, setAiEnabled] = useState(false);
+  const [aiAnalyzing, setAiAnalyzing] = useState(false);
   const [marketData, setMarketData] = useState({});
   const [signals, setSignals] = useState([]);
   const [configOpen, setConfigOpen] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState('BTCUSDT');
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [isConfigured, setIsConfigured] = useState(false);
   
   const wsRef = useRef(null);
 
