@@ -177,7 +177,7 @@ function App() {
   };
 
   const getMarketStateText = (data) => {
-    if (!data || !data.volume_profile) return 'UNKNOWN';
+    if (!data || !data.volume_profile) return 'WARMING UP';
     const price = data.price;
     const vah = data.volume_profile.vah;
     const val = data.volume_profile.val;
