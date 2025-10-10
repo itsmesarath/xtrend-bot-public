@@ -610,8 +610,15 @@ async def broadcast_signal(signal: TradingSignal):
 async def save_config(config: APIConfig):
     """Save API configuration"""
     global api_config
+    old_binance_key = api_config.binance_key
     api_config = config
-    return {"status": "success", "message": "Configuration saved"}
+    
+    # If Binance keys changed, restart data stream
+    if old_binance_key != config.binance_key:
+        logger.info("Binance API keys updated - restarting data stream...")
+        asyncio.create_task(restart_data_stream())
+        
+    return {"status": "success", "message": "Configuration saved. Data stream restarting..."}
 
 @api_router.get("/config")
 async def get_config():
