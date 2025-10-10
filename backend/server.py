@@ -318,8 +318,12 @@ class BinanceDataSimulator:
     
     async def start_streaming(self):
         """Start streaming simulated data"""
+        # Initialize with real current prices first
+        if not self.initialized:
+            await self.initialize_prices()
+        
         self.running = True
-        logger.info("Starting Binance data simulation...")
+        logger.info(f"Starting Binance data simulation with prices: BTC=${self.base_prices.get('BTCUSDT', 0):.0f}")
         
         while self.running:
             try:
