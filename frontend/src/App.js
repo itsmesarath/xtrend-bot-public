@@ -601,12 +601,14 @@ function App() {
 }
 
 // Volume Profile Chart Component
-const VolumeProfileChart = ({ data }) => {
-  if (!data || !data.volume_profile || !data.volume_profile.levels) {
-    return <div className="text-slate-400 text-center py-8">Loading volume profile...</div>;
+const VolumeProfileChart = ({ data, profileKey = 'volume_profile', title = 'Volume Profile' }) => {
+  const profile = data?.[profileKey];
+  
+  if (!profile || !profile.levels) {
+    return <div className="text-slate-400 text-center py-8 text-sm">Loading {title}...</div>;
   }
 
-  const { poc, vah, val, levels } = data.volume_profile;
+  const { poc, vah, val, levels } = profile;
   const maxVolume = Math.max(...levels.map(l => l.volume));
   
   // Get current price from latest candle
