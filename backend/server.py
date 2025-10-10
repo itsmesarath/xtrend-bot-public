@@ -369,11 +369,13 @@ class BinanceDataSimulator:
         
         # Generate initial historical data (last 6 hours worth = 360 candles at 1m)
         logger.info("Generating initial historical data (6 hours)...")
+        start_time = datetime.now(timezone.utc) - timedelta(minutes=360)
+        
         for symbol in self.symbols:
             for i in range(360):
                 candle = await self.generate_candle(symbol)
-                # Adjust timestamp to be in the past
-                candle['timestamp'] = datetime.now(timezone.utc) - timedelta(minutes=(360 - i))
+                # Set timestamp in proper ascending order
+                candle['timestamp'] = start_time + timedelta(minutes=i)
                 market_store.candles[symbol].append(candle)
         
         logger.info(f"Generated {len(market_store.candles['BTCUSDT'])} historical candles")
