@@ -232,10 +232,10 @@ class BinanceDataSimulator:
     def __init__(self):
         self.symbols = ["BTCUSDT", "ETHUSDT", "LTCUSDT", "DOGEUSDT"]
         self.base_prices = {
-            "BTCUSDT": 42000.0,
-            "ETHUSDT": 2200.0,
-            "LTCUSDT": 68.0,
-            "DOGEUSDT": 0.08
+            "BTCUSDT": 103500.0,  # Updated to current Oct 2025 prices
+            "ETHUSDT": 3850.0,
+            "LTCUSDT": 115.0,
+            "DOGEUSDT": 0.38
         }
         self.current_prices = self.base_prices.copy()
         self.running = False
