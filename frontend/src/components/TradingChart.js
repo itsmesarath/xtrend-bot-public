@@ -15,28 +15,66 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Create chart with v4 API
+    // Create chart with v4 API - TradingView style
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: 450,
+      height: isFullscreen ? window.innerHeight * 0.8 : 500,
       layout: {
         backgroundColor: '#0f172a',
         textColor: '#94a3b8',
+        fontSize: 12,
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       },
       grid: {
-        vertLines: { color: '#1e293b' },
-        horzLines: { color: '#1e293b' },
+        vertLines: { 
+          color: '#1e293b',
+          style: 1,
+        },
+        horzLines: { 
+          color: '#1e293b',
+          style: 1,
+        },
       },
       crosshair: {
         mode: 1,
+        vertLine: {
+          color: '#64748b',
+          width: 1,
+          style: 2,
+          labelBackgroundColor: '#334155',
+        },
+        horzLine: {
+          color: '#64748b',
+          width: 1,
+          style: 2,
+          labelBackgroundColor: '#334155',
+        },
       },
       rightPriceScale: {
         borderColor: '#334155',
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.2,
+        },
       },
       timeScale: {
         borderColor: '#334155',
         timeVisible: true,
         secondsVisible: false,
+        rightOffset: 12,
+        barSpacing: 6,
+        minBarSpacing: 3,
+      },
+      handleScroll: {
+        mouseWheel: true,
+        pressedMouseMove: true,
+        horzTouchDrag: true,
+        vertTouchDrag: true,
+      },
+      handleScale: {
+        axisPressedMouseMove: true,
+        mouseWheel: true,
+        pinch: true,
       },
     });
 
