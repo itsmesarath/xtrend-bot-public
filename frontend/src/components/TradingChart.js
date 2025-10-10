@@ -15,6 +15,11 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
+    // Clean up existing chart
+    if (chartRef.current) {
+      chartRef.current.remove();
+    }
+
     // Create chart with v4 API - TradingView style
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
