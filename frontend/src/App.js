@@ -496,67 +496,47 @@ function App() {
 
             {/* Selected Symbol Details */}
             {marketData[selectedSymbol] && (
-              <div className="space-y-6">
-                {/* Three Volume Profiles in a Row */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Current Volume Profile (Last 50 candles) */}
-                  <Card className="bg-slate-800/50 border-slate-700">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-white text-base">
-                        <BarChart3 className="w-4 h-4" />
-                        Current (50 bars)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <VolumeProfileChart 
-                        data={marketData[selectedSymbol]} 
-                        profileKey="volume_profile"
-                        title="Current"
-                      />
-                    </CardContent>
-                  </Card>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Current Volume Profile (Last 50 candles) */}
+                <Card className="bg-slate-800/50 border-slate-700">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-white">
+                      <BarChart3 className="w-5 h-5" />
+                      Current (50 bars)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <VolumeProfileChart 
+                      data={marketData[selectedSymbol]} 
+                      profileKey="volume_profile"
+                      title="Current"
+                    />
+                  </CardContent>
+                </Card>
 
-                  {/* 1-Hour Volume Profile */}
-                  <Card className="bg-slate-800/50 border-slate-700">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-white text-base">
-                        <BarChart3 className="w-4 h-4" />
-                        1 Hour (60 bars)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <VolumeProfileChart 
-                        data={marketData[selectedSymbol]} 
-                        profileKey="volume_profile_1h"
-                        title="1 Hour"
-                      />
-                    </CardContent>
-                  </Card>
+                {/* Full Day Volume Profile */}
+                <Card className="bg-slate-800/50 border-slate-700">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-white">
+                      <BarChart3 className="w-5 h-5" />
+                      Full Day
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <VolumeProfileChart 
+                      data={marketData[selectedSymbol]} 
+                      profileKey="volume_profile_day"
+                      title="Full Day"
+                    />
+                  </CardContent>
+                </Card>
 
-                  {/* Full Day Volume Profile */}
-                  <Card className="bg-slate-800/50 border-slate-700">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-white text-base">
-                        <BarChart3 className="w-4 h-4" />
-                        Full Day
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <VolumeProfileChart 
-                        data={marketData[selectedSymbol]} 
-                        profileKey="volume_profile_day"
-                        title="Full Day"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Order Flow Below */}
+                {/* Order Flow */}
                 <Card className="bg-slate-800/50 border-slate-700">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-white">
                       <Activity className="w-5 h-5" />
-                      Order Flow - {selectedSymbol}
+                      Order Flow
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
