@@ -31,17 +31,17 @@
     "files": [
       "main.js",
       "preload.js",
-      "assets/**/*",
-      "../frontend/build/**/*"
+      "assets/**/*"
     ],
     "extraResources": [
       {
-        "from": "../backend/dist/server",
-        "to": "backend"
+        "from": "../frontend/build",
+        "to": "frontend/build",
+        "filter": ["**/*"]
       },
       {
-        "from": "mongodb",
-        "to": "mongodb"
+        "from": "../backend/dist/server.exe",
+        "to": "backend/server.exe"
       }
     ],
     "win": {
@@ -53,21 +53,16 @@
       ],
       "icon": "assets/icon.ico"
     },
-    "mac": {
-      "target": ["dmg", "zip"],
-      "icon": "assets/icon.icns",
-      "category": "public.app-category.finance"
-    },
-    "linux": {
-      "target": ["AppImage", "deb"],
-      "icon": "assets/icon.png",
-      "category": "Finance"
-    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "shortcutName": "AMT Trading Bot",
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico"
     }
   }
 }
