@@ -403,20 +403,30 @@ class BinanceDataSimulator:
 
 async def start_data_stream():
     """Start appropriate data stream based on configuration"""
-    global binance_fetcher, binance_simulator
+    global binance_fetcher, binance_simulator, use_demo_mode
     
-    if api_config.binance_key and api_config.binance_secret:
-        # Use real Binance data only
+    if not api_config.binance_key or not api_config.binance_secret:
+        # No API keys - bot is idle
+        logger.info("No Binance API keys configured - bot is idle. Waiting for configuration.")
+        return
+    
+    if use_demo_mode:
+        # Use demo mode with real current prices
+        logger.info("Starting DEMO MODE with real current prices from public APIs...")
+        binance_simulator = BinanceDataSimulator()
+        asyncio.create_task(binance_simulator.start_streaming())
+    else:
+        # Use real Binance live data
         try:
-            logger.info("Binance API keys configured - connecting to live data...")
+            logger.info("Starting LIVE BINANCE MODE - connecting to real-time WebSocket...")
             binance_fetcher = BinanceDataFetcher(api_config.binance_key, api_config.binance_secret)
             await binance_fetcher.start()
+            logger.info("✅ Connected to Binance live data successfully!")
         except Exception as e:
             logger.error(f"Failed to connect to Binance API: {e}")
+            logger.error("Binance API may be geo-restricted from this server location.")
+            logger.info("Consider switching to Demo Mode or deploying to a Binance-supported region.")
             raise
-    else:
-        # No data streaming without API keys
-        logger.info("No Binance API keys configured - bot is idle. Waiting for configuration.")
 
 async def restart_data_stream():
     """Restart data stream when configuration changes"""
