@@ -1010,11 +1010,10 @@ async def get_ai_status():
 
 @api_router.get("/market/{symbol}")
 async def get_market_data(symbol: str, limit: int = 100):
-    """Get current market data for a symbol with all three volume profiles"""
+    """Get current market data for a symbol with two volume profiles"""
     candles = list(market_store.candles[symbol])[-limit:]
     
     profile_current = market_store.volume_profiles.get(symbol)
-    profile_1h = market_store.volume_profiles_1h.get(symbol)
     profile_day = market_store.volume_profiles_day.get(symbol)
     order_flow = market_store.order_flow.get(symbol)
     
@@ -1022,7 +1021,6 @@ async def get_market_data(symbol: str, limit: int = 100):
         "symbol": symbol,
         "candles": candles,
         "volume_profile": profile_current.model_dump() if profile_current else None,
-        "volume_profile_1h": profile_1h.model_dump() if profile_1h else None,
         "volume_profile_day": profile_day.model_dump() if profile_day else None,
         "order_flow": order_flow.model_dump() if order_flow else None
     }
