@@ -91,20 +91,28 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
     candleSeriesRef.current = candleSeries;
 
-    // Add volume series - v4 API
+    // Add volume series - v4 API in separate pane
     const volumeSeries = chart.addHistogramSeries({
       color: '#334155',
       priceFormat: {
         type: 'volume',
       },
-      priceScaleId: '',
+      priceScaleId: 'volume',
       scaleMargins: {
-        top: 0.8,
+        top: 0.7,  // Volume takes bottom 30% of chart
         bottom: 0,
       },
     });
 
     volumeSeriesRef.current = volumeSeries;
+    
+    // Create separate price scale for volume
+    chart.priceScale('volume').applyOptions({
+      scaleMargins: {
+        top: 0.7,
+        bottom: 0,
+      },
+    });
 
     // Handle resize
     const handleResize = () => {
