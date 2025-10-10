@@ -281,7 +281,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
       </div>
 
       {/* Chart Container */}
-      <div ref={chartContainerRef} className="rounded-lg overflow-hidden border border-slate-700" style={{ height: isFullscreen ? '80vh' : '500px' }} />
+      <div ref={chartContainerRef} className="rounded-lg overflow-hidden border border-slate-700" style={{ height: isFullscreen ? '80vh' : '600px' }} />
       
       {/* Legend - Bottom Left */}
       <div className="absolute bottom-4 left-4 bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700 text-xs space-y-1.5">
