@@ -1,22 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createChart, ColorType } from 'lightweight-charts';
+import React, { useEffect, useRef } from 'react';
+import { createChart } from 'lightweight-charts';
 
 const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   const chartContainerRef = useRef();
   const chartRef = useRef();
   const candleSeriesRef = useRef();
   const volumeSeriesRef = useRef();
-  const markersRef = useRef([]);
+  const priceLineRefs = useRef([]);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Create chart
+    // Create chart with v5 API
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: 450,
       layout: {
-        background: { type: ColorType.Solid, color: '#0f172a' },
+        background: { color: '#0f172a' },
         textColor: '#94a3b8',
       },
       grid: {
@@ -38,9 +38,8 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
     chartRef.current = chart;
 
-    // Add candlestick series
-    const candleSeries = chart.addSeries({
-      type: 'Candlestick',
+    // Add candlestick series - v5 API
+    const candleSeries = chart.addCandlestickSeries({
       upColor: '#10b981',
       downColor: '#ef4444',
       borderVisible: false,
@@ -50,14 +49,13 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
     candleSeriesRef.current = candleSeries;
 
-    // Add volume series
-    const volumeSeries = chart.addSeries({
-      type: 'Histogram',
+    // Add volume series - v5 API
+    const volumeSeries = chart.addHistogramSeries({
       color: '#334155',
       priceFormat: {
         type: 'volume',
       },
-      priceScaleId: 'volume',
+      priceScaleId: '',
       scaleMargins: {
         top: 0.8,
         bottom: 0,
