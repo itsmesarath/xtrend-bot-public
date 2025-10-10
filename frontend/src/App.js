@@ -635,7 +635,7 @@ const VolumeProfileChart = ({ data, profileKey = 'volume_profile', title = 'Volu
       </div>
 
       {/* Volume Bars */}
-      <ScrollArea className="h-64">
+      <ScrollArea className="h-48">
         <div className="space-y-1 relative">
           {levels.slice(0, 30).map((level, idx) => {
             const widthPercent = (level.volume / maxVolume) * 100;
