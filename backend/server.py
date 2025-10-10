@@ -386,7 +386,9 @@ class BinanceDataSimulator:
         
         # Calculate initial volume profile for all symbols
         for symbol in self.symbols:
-            await calculate_volume_profile(symbol)
+            await calculate_volume_profile(symbol, 50, "current")  # Last 50 candles
+            await calculate_volume_profile(symbol, 60, "1h")        # Last 1 hour (60 candles)
+            await calculate_volume_profile(symbol, -1, "day")       # All candles (full day)
             await calculate_order_flow(symbol)
         
         while self.running:
