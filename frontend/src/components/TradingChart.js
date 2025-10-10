@@ -61,9 +61,12 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
       rightPriceScale: {
         borderColor: '#334155',
         scaleMargins: {
-          top: 0.1,
-          bottom: 0.2,
+          top: 0.05,
+          bottom: 0.25,
         },
+        autoScale: true,
+        alignLabels: true,
+        borderVisible: true,
       },
       timeScale: {
         borderColor: '#334155',
