@@ -356,23 +356,30 @@ function App() {
                       ) : (
                         <div className="space-y-2">
                           <div className="text-2xl font-bold text-white">
-                            ${data.price?.toFixed(2) || '0.00'}
+                            ${data.price?.toFixed(2) || (data.candles && data.candles.length > 0 ? data.candles[data.candles.length - 1].close.toFixed(2) : '0.00')}
                           </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div>
-                              <p className="text-slate-400">POC</p>
-                              <p className="text-white font-medium">${data.volume_profile?.poc?.toFixed(2) || '-'}</p>
+                          {!data.volume_profile ? (
+                            <div className="text-xs text-amber-400 flex items-center gap-1">
+                              <Activity className="w-3 h-3 animate-pulse" />
+                              Collecting data... ({data.candles?.length || 0}/10 candles)
                             </div>
-                            <div>
-                              <p className="text-slate-400">CVD</p>
-                              <p className={`font-medium ${
-                                data.order_flow?.cvd_trend === 'positive' ? 'text-emerald-400' : 
-                                data.order_flow?.cvd_trend === 'negative' ? 'text-red-400' : 'text-slate-400'
-                              }`}>
-                                {data.order_flow?.cvd?.toFixed(2) || '-'}
-                              </p>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <p className="text-slate-400">POC</p>
+                                <p className="text-white font-medium">${data.volume_profile?.poc?.toFixed(2) || '-'}</p>
+                              </div>
+                              <div>
+                                <p className="text-slate-400">CVD</p>
+                                <p className={`font-medium ${
+                                  data.order_flow?.cvd_trend === 'positive' ? 'text-emerald-400' : 
+                                  data.order_flow?.cvd_trend === 'negative' ? 'text-red-400' : 'text-slate-400'
+                                }`}>
+                                  {data.order_flow?.cvd?.toFixed(2) || '-'}
+                                </p>
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       )}
                     </CardContent>
