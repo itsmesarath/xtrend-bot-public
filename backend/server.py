@@ -623,11 +623,16 @@ async def save_config(config: APIConfig):
 @api_router.get("/config")
 async def get_config():
     """Get current configuration (without sensitive data)"""
+    global binance_fetcher, binance_simulator
+    
+    data_source = "live" if binance_fetcher else "simulated"
+    
     return {
         "has_openrouter_key": bool(api_config.openrouter_key),
         "has_binance_key": bool(api_config.binance_key),
         "has_binance_secret": bool(api_config.binance_secret),
-        "ai_model": api_config.ai_model
+        "ai_model": api_config.ai_model,
+        "data_source": data_source
     }
 
 @api_router.post("/ai/toggle")
