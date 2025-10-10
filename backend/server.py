@@ -1014,41 +1014,21 @@ async def get_ai_status():
     return {"ai_enabled": market_store.ai_enabled}
 
 @api_router.get("/market/{symbol}")
-async def get_market_data(symbol: str, timeframe: str = "1m", limit: int = 1000):
-    """Get current market data for a symbol with timeframe support"""
-    base_candles = list(market_store.candles[symbol])
+async def get_market_data(symbol: str, limit: int = 100):
+    """Get current market data for a symbol with all three volume profiles"""
+    candles = list(market_store.candles[symbol])[-limit:]
     
-    # Map timeframe to minutes
-    timeframe_map = {
-        "1m": 1,
-        "5m": 5,
-        "15m": 15,
-        "30m": 30,
-        "1h": 60,
-        "4h": 240,
-        "1d": 1440
-    }
-    
-    minutes = timeframe_map.get(timeframe, 1)
-    
-    # Aggregate if needed
-    if minutes > 1:
-        candles = aggregate_candles(base_candles, minutes)
-    else:
-        candles = base_candles
-    
-    # Apply limit
-    if limit > 0:
-        candles = candles[-limit:]
-    
-    profile = market_store.volume_profiles.get(symbol)
+    profile_current = market_store.volume_profiles.get(symbol)
+    profile_1h = market_store.volume_profiles_1h.get(symbol)
+    profile_day = market_store.volume_profiles_day.get(symbol)
     order_flow = market_store.order_flow.get(symbol)
     
     return {
         "symbol": symbol,
-        "timeframe": timeframe,
         "candles": candles,
-        "volume_profile": profile.model_dump() if profile else None,
+        "volume_profile": profile_current.model_dump() if profile_current else None,
+        "volume_profile_1h": profile_1h.model_dump() if profile_1h else None,
+        "volume_profile_day": profile_day.model_dump() if profile_day else None,
         "order_flow": order_flow.model_dump() if order_flow else None
     }
 
