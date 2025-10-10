@@ -11,7 +11,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { TrendingUp, TrendingDown, Activity, Settings, BarChart3, Zap, AlertCircle, CheckCircle, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, Settings, BarChart3, Zap, AlertCircle, CheckCircle, ArrowUpCircle, ArrowDownCircle, Play, Pause } from 'lucide-react';
+import TradingChart from '@/components/TradingChart';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
