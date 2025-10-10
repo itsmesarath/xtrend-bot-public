@@ -128,11 +128,6 @@ binance_simulator = None  # Fallback simulator
 
 # ==================== BINANCE DATA ====================
 
-import random
-import time
-from binance import AsyncClient, BinanceSocketManager
-from binance.enums import *
-
 class BinanceDataFetcher:
     \"\"\"Real Binance data fetcher using API\"\"\"
     def __init__(self, api_key: str, api_secret: str):
