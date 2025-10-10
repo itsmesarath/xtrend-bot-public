@@ -713,7 +713,7 @@ async def startup_event():
     """Start background tasks"""
     logger.info("Starting Trading Signal Bot...")
     # Start data streaming in background
-    asyncio.create_task(binance_simulator.start_streaming())
+    await start_data_stream()
 
 @app.on_event("shutdown")
 async def shutdown_event():
