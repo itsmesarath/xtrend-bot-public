@@ -43,7 +43,6 @@ function App() {
   const [isConfigured, setIsConfigured] = useState(false);
   const [useDemoMode, setUseDemoMode] = useState(true);
   const [dataMode, setDataMode] = useState('demo');
-  const [currentTimeframes, setCurrentTimeframes] = useState({});
   
   const wsRef = useRef(null);
 
