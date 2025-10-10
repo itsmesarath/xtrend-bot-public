@@ -119,8 +119,23 @@ function App() {
       const response = await axios.get(`${API}/config`);
       setConfigStatus(response.data);
       setIsConfigured(response.data.has_binance_key && response.data.has_binance_secret);
+      setUseDemoMode(response.data.use_demo_mode);
+      setDataMode(response.data.data_source);
     } catch (error) {
       console.error('Error fetching config:', error);
+    }
+  };
+
+  const toggleDataMode = async () => {
+    try {
+      const response = await axios.post(`${API}/data-mode/toggle`);
+      if (response.data.status === 'success') {
+        setUseDemoMode(response.data.use_demo_mode);
+        await fetchConfigStatus();
+      }
+    } catch (error) {
+      console.error('Error toggling data mode:', error);
+      alert('Failed to toggle data mode');
     }
   };
 
