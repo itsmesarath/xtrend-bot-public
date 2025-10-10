@@ -531,7 +531,8 @@ function App() {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
+          </Tabs>
+        )}
       </main>
     </div>
   );
