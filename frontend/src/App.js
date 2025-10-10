@@ -29,7 +29,8 @@ function App() {
   const [configStatus, setConfigStatus] = useState({
     has_openrouter_key: false,
     has_binance_key: false,
-    has_binance_secret: false
+    has_binance_secret: false,
+    data_source: 'simulated'
   });
   
   const [aiEnabled, setAiEnabled] = useState(false);
