@@ -128,7 +128,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
         chart.remove();
       }
     };
-  }, []);
+  }, [timeframe, isFullscreen]);
 
   // Update candle data
   useEffect(() => {
