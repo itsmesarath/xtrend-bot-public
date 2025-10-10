@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { createChart } from 'lightweight-charts';
+import { createChart, ColorType } from 'lightweight-charts';
 
 const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   const chartContainerRef = useRef();
@@ -16,7 +16,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
       width: chartContainerRef.current.clientWidth,
       height: 450,
       layout: {
-        background: { color: '#0f172a' },
+        background: { type: ColorType.Solid, color: '#0f172a' },
         textColor: '#94a3b8',
       },
       grid: {
@@ -39,7 +39,8 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
     chartRef.current = chart;
 
     // Add candlestick series
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = chart.addSeries({
+      type: 'Candlestick',
       upColor: '#10b981',
       downColor: '#ef4444',
       borderVisible: false,
@@ -50,7 +51,8 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
     candleSeriesRef.current = candleSeries;
 
     // Add volume series
-    const volumeSeries = chart.addHistogramSeries({
+    const volumeSeries = chart.addSeries({
+      type: 'Histogram',
       color: '#334155',
       priceFormat: {
         type: 'volume',
