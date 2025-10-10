@@ -195,9 +195,9 @@ class BinanceDataSimulator:
         while self.running:
             try:
                 for symbol in self.symbols:
-                    # Generate candle every 60 seconds
+                    # Generate candle every 10 seconds for demo purposes
                     if len(market_store.candles[symbol]) == 0 or \
-                       (datetime.now(timezone.utc) - market_store.candles[symbol][-1]['timestamp']).seconds >= 60:
+                       (datetime.now(timezone.utc) - market_store.candles[symbol][-1]['timestamp']).seconds >= 10:
                         candle = await self.generate_candle(symbol)
                         market_store.candles[symbol].append(candle)
                         
