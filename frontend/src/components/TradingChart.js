@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createChart } from 'lightweight-charts';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   const chartContainerRef = useRef();
@@ -7,6 +9,8 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   const candleSeriesRef = useRef();
   const volumeSeriesRef = useRef();
   const priceLineRefs = useRef([]);
+  const [timeframe, setTimeframe] = useState('1m');
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
