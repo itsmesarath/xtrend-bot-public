@@ -265,7 +265,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
           {['1m', '5m', '15m', '1h'].map((tf) => (
             <button
               key={tf}
-              onClick={() => setTimeframe(tf)}
+              onClick={() => handleTimeframeChange(tf)}
               className={`px-3 py-1 text-xs rounded transition-all ${
                 timeframe === tf
                   ? 'bg-cyan-500 text-white font-semibold'
