@@ -231,14 +231,42 @@ class BinanceDataFetcher:
 class BinanceDataSimulator:
     def __init__(self):
         self.symbols = ["BTCUSDT", "ETHUSDT", "LTCUSDT", "DOGEUSDT"]
-        self.base_prices = {
-            "BTCUSDT": 103500.0,  # Updated to current Oct 2025 prices
-            "ETHUSDT": 3850.0,
-            "LTCUSDT": 115.0,
-            "DOGEUSDT": 0.38
-        }
-        self.current_prices = self.base_prices.copy()
+        self.base_prices = {}
+        self.current_prices = {}
         self.running = False
+        self.initialized = False
+        
+    async def initialize_prices(self):
+        """Fetch real current prices from Binance public API as starting point"""
+        try:
+            import aiohttp
+            async with aiohttp.ClientSession() as session:
+                for symbol in self.symbols:
+                    url = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}"
+                    async with session.get(url) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            price = float(data['price'])
+                            self.base_prices[symbol] = price
+                            self.current_prices[symbol] = price
+                            logger.info(f"Simulator initialized {symbol} at ${price:.2f}")
+                        else:
+                            # Fallback to default prices
+                            self.base_prices[symbol] = {"BTCUSDT": 103500.0, "ETHUSDT": 3850.0, 
+                                                       "LTCUSDT": 115.0, "DOGEUSDT": 0.38}[symbol]
+                            self.current_prices[symbol] = self.base_prices[symbol]
+            self.initialized = True
+        except Exception as e:
+            logger.warning(f"Could not fetch real prices for simulator: {e}. Using default prices.")
+            # Fallback prices
+            self.base_prices = {
+                "BTCUSDT": 103500.0,
+                "ETHUSDT": 3850.0,
+                "LTCUSDT": 115.0,
+                "DOGEUSDT": 0.38
+            }
+            self.current_prices = self.base_prices.copy()
+            self.initialized = True
         
     async def generate_candle(self, symbol: str) -> Dict:
         """Generate a realistic candle with volume"""
