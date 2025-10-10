@@ -116,6 +116,7 @@ function App() {
     try {
       const response = await axios.get(`${API}/config`);
       setConfigStatus(response.data);
+      setIsConfigured(response.data.has_binance_key && response.data.has_binance_secret);
     } catch (error) {
       console.error('Error fetching config:', error);
     }
