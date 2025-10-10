@@ -70,7 +70,7 @@ function App() {
 
   const connectWebSocket = () => {
     try {
-      const wsUrl = `${BACKEND_URL}/api/ws`.replace('https://', 'wss://').replace('http://', 'ws://');
+      const wsUrl = `${WS_URL}/api/ws`;
       const ws = new WebSocket(wsUrl);
       
       ws.onopen = () => {
