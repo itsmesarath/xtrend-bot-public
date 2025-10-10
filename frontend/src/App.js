@@ -618,19 +618,19 @@ const VolumeProfileChart = ({ data, profileKey = 'volume_profile', title = 'Volu
 
   return (
     <div className="space-y-4">
-      {/* Key Levels */}
-      <div className="grid grid-cols-3 gap-4 text-sm">
-        <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+      {/* Key Levels - Compact */}
+      <div className="grid grid-cols-3 gap-2 text-xs mb-3">
+        <div className="bg-slate-900/50 p-2 rounded border border-slate-700">
           <p className="text-slate-400 text-xs mb-1">VAH</p>
-          <p className="text-white font-semibold">${vah?.toFixed(2)}</p>
+          <p className="text-white font-semibold text-xs">${vah?.toFixed(2)}</p>
         </div>
-        <div className="bg-cyan-500/10 p-3 rounded-lg border border-cyan-500/50">
+        <div className="bg-cyan-500/10 p-2 rounded border border-cyan-500/50">
           <p className="text-cyan-400 text-xs mb-1">POC</p>
-          <p className="text-white font-semibold">${poc?.toFixed(2)}</p>
+          <p className="text-white font-semibold text-xs">${poc?.toFixed(2)}</p>
         </div>
-        <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
+        <div className="bg-slate-900/50 p-2 rounded border border-slate-700">
           <p className="text-slate-400 text-xs mb-1">VAL</p>
-          <p className="text-white font-semibold">${val?.toFixed(2)}</p>
+          <p className="text-white font-semibold text-xs">${val?.toFixed(2)}</p>
         </div>
       </div>
 
