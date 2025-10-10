@@ -15,46 +15,32 @@ const PYTHON_PATH = isDev
   ? 'python'
   : path.join(process.resourcesPath, 'python', 'python.exe');
 
-// Start MongoDB
-function startMongoDB() {
-  return new Promise((resolve, reject) => {
-    const fs = require('fs');
+// Check if MongoDB is accessible
+async function checkMongoDB() {
+  return new Promise((resolve) => {
+    const net = require('net');
+    const socket = new net.Socket();
     
-    // Create MongoDB data directory if it doesn't exist
-    if (!fs.existsSync(MONGO_DATA_PATH)) {
-      fs.mkdirSync(MONGO_DATA_PATH, { recursive: true });
-    }
-
-    console.log('Starting MongoDB...');
+    socket.setTimeout(2000);
+    socket.on('connect', () => {
+      console.log('MongoDB is accessible on localhost:27017');
+      socket.destroy();
+      resolve(true);
+    });
     
-    mongoProcess = spawn(MONGO_PATH, [
-      '--dbpath', MONGO_DATA_PATH,
-      '--port', '27017',
-      '--noauth'
-    ], {
-      env: { ...process.env }
+    socket.on('timeout', () => {
+      console.warn('MongoDB not found on localhost:27017 - backend will use in-memory fallback');
+      socket.destroy();
+      resolve(false);
     });
-
-    mongoProcess.stdout.on('data', (data) => {
-      console.log(`MongoDB: ${data}`);
-      if (data.toString().includes('Waiting for connections')) {
-        resolve();
-      }
+    
+    socket.on('error', () => {
+      console.warn('MongoDB not found - backend will use in-memory fallback');
+      socket.destroy();
+      resolve(false);
     });
-
-    mongoProcess.stderr.on('data', (data) => {
-      console.error(`MongoDB Error: ${data}`);
-    });
-
-    mongoProcess.on('error', (error) => {
-      console.error('Failed to start MongoDB:', error);
-      reject(error);
-    });
-
-    // Timeout after 10 seconds
-    setTimeout(() => {
-      resolve(); // Resolve anyway, backend will retry connection
-    }, 10000);
+    
+    socket.connect(27017, 'localhost');
   });
 }
 
