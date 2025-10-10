@@ -539,15 +539,24 @@ def aggregate_candles(candles: list, timeframe_minutes: int) -> list:
 
 # ==================== VOLUME PROFILE CALCULATIONS ====================
 
-async def calculate_volume_profile(symbol: str) -> Optional[VolumeProfile]:
-    """Calculate volume profile from candle data"""
+async def calculate_volume_profile(symbol: str, num_candles: int = 50, profile_type: str = "current") -> Optional[VolumeProfile]:
+    """Calculate volume profile from candle data
+    
+    Args:
+        symbol: Trading symbol
+        num_candles: Number of recent candles to use (-1 for all)
+        profile_type: Type of profile ("current", "1h", or "day")
+    """
     try:
         candles = list(market_store.candles[symbol])
         if len(candles) < 10:
             return None
         
-        # Use last 50 candles for profile calculation
-        recent_candles = candles[-50:]
+        # Select candles based on num_candles parameter
+        if num_candles == -1:
+            recent_candles = candles  # All candles for day profile
+        else:
+            recent_candles = candles[-num_candles:]
         
         # Find price range
         all_prices = []
