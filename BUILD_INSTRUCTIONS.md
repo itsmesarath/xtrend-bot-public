@@ -1,139 +1,138 @@
-# Building AMT Trading Signal Bot as Electron Desktop App
+# AMT Trading Signal Bot - Electron Desktop Build Instructions
+
+This guide provides step-by-step instructions to build and package the AMT Trading Signal Bot as a Windows desktop application.
+
+---
+
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Project Overview](#project-overview)
+3. [Development Setup](#development-setup)
+4. [Building for Production](#building-for-production)
+5. [Distribution](#distribution)
+6. [Troubleshooting](#troubleshooting)
+7. [Configuration](#configuration)
+
+---
 
 ## Prerequisites
 
 ### Required Software
-1. **Node.js & npm** (v18+)
-2. **Python** (v3.10+)
-3. **MongoDB** (Download portable version)
-4. **PyInstaller** (for packaging Python backend)
 
-### Install Build Tools
+1. **Node.js** (v18.x or higher)
+   - Download from: https://nodejs.org/
+   - Verify installation: `node --version` and `npm --version`
+
+2. **Yarn Package Manager**
+   - Install: `npm install -g yarn`
+   - Verify: `yarn --version`
+
+3. **Python** (v3.9 or higher)
+   - Download from: https://www.python.org/downloads/
+   - Verify: `python --version`
+   - **Important**: Check "Add Python to PATH" during installation
+
+4. **PyInstaller** (for backend packaging)
+   - Install: `pip install pyinstaller`
+   - Verify: `pyinstaller --version`
+
+5. **MongoDB** (Optional - for persistent storage)
+   - Download from: https://www.mongodb.com/try/download/community
+   - If not installed, app will use in-memory storage
+   - Default port: 27017
+
+6. **Git** (for version control)
+   - Download from: https://git-scm.com/
+
+### System Requirements
+
+- **OS**: Windows 10/11 (64-bit)
+- **RAM**: Minimum 4GB (8GB recommended)
+- **Storage**: 2GB free space for build artifacts
+- **Internet**: Required for initial dependency installation
+
+---
+
+## Project Overview
+
+### Architecture
+
+```
+AMT Trading Bot Desktop App
+├── Electron (Desktop Shell)
+│   ├── Window Management
+│   ├── Process Lifecycle
+│   └── Backend Subprocess Control
+├── React Frontend (UI)
+│   ├── Market Data Visualization
+│   ├── Volume Profile Charts
+│   ├── Signal Dashboard
+│   └── Configuration Panel
+└── FastAPI Backend (Python)
+    ├── Data Processing
+    ├── WebSocket Server
+    ├── Trading Signal Generation
+    └── AI Integration (OpenRouter)
+```
+
+### Technology Stack
+
+- **Desktop Framework**: Electron 28.x
+- **Frontend**: React 18 with Shadcn/UI components
+- **Backend**: FastAPI (Python)
+- **Database**: MongoDB (optional) or In-Memory
+- **Build Tools**: electron-builder, PyInstaller, Webpack
+
+---
+
+## Development Setup
+
+### 1. Clone and Install Dependencies
 
 ```bash
-# Install PyInstaller
-pip install pyinstaller
+# Navigate to project root
+cd /path/to/amt-trading-bot
+
+# Install frontend dependencies
+cd frontend
+yarn install
+cd ..
+
+# Install backend dependencies
+cd backend
+pip install -r requirements.txt
+cd ..
 
 # Install Electron dependencies
 cd electron
-npm install
+yarn install
+cd ..
 ```
 
-## Build Process
+### 2. Environment Configuration
 
-### Step 1: Prepare Frontend
+#### Frontend (.env)
+Create or verify `frontend/.env`:
+```env
+# Development uses system MongoDB
+REACT_APP_BACKEND_URL=http://localhost:8001
+WDS_SOCKET_PORT=443
+```
+
+#### Backend (.env)
+Create or verify `backend/.env`:
+```env
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=amt_trading_bot
+CORS_ORIGINS=*
+```
+
+### 3. Run in Development Mode
 
 ```bash
-cd frontend
-npm run build
-# This creates production build in frontend/build/
-```
-
-### Step 2: Package Backend with PyInstaller
-
-```bash
-cd backend
-
-# Windows
-pyinstaller --onefile --name server ^
-  --hidden-import uvicorn ^
-  --hidden-import fastapi ^
-  --hidden-import motor ^
-  --collect-all pydantic ^
-  server.py
-
-# Mac/Linux
-pyinstaller --onefile --name server \
-  --hidden-import uvicorn \
-  --hidden-import fastapi \
-  --hidden-import motor \
-  --collect-all pydantic \
-  server.py
-
-# Output: backend/dist/server (or server.exe on Windows)
-```
-
-### Step 3: Download Portable MongoDB
-
-**Windows:**
-```bash
-# Download from: https://www.mongodb.com/try/download/community
-# Extract to: electron/mongodb/
-# Structure: electron/mongodb/bin/mongod.exe
-```
-
-**Mac:**
-```bash
-# Download MongoDB Community Server
-# Extract to: electron/mongodb/
-# Structure: electron/mongodb/bin/mongod
-```
-
-**Linux:**
-```bash
-# Download from MongoDB website
-# Extract to: electron/mongodb/
-# Structure: electron/mongodb/bin/mongod
-```
-
-### Step 4: Build Electron App
-
-```bash
-cd electron
-
-# Build for current platform
-npm run build
-
-# Or build for specific platforms:
-npm run build:win    # Windows
-npm run build:mac    # macOS
-npm run build:linux  # Linux
-```
-
-### Output Locations
-
-- **Windows**: `electron/dist/AMT Trading Bot Setup.exe`
-- **Mac**: `electron/dist/AMT Trading Bot.dmg`
-- **Linux**: `electron/dist/AMT Trading Bot.AppImage`
-
-## Alternative: Simplified Build (Without MongoDB)
-
-If bundling MongoDB is too complex, use SQLite instead:
-
-### 1. Install SQLite Support
-
-```bash
-pip install aiosqlite sqlalchemy
-```
-
-### 2. Update Backend to Use SQLite
-
-Replace MongoDB connection in `backend/server.py`:
-
-```python
-# Instead of MongoDB
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-import aiosqlite
-
-# SQLite database will be in user's AppData folder
-db_path = os.path.join(app.getPath('userData'), 'amt_bot.db')
-DATABASE_URL = f"sqlite+aiosqlite:///{db_path}"
-```
-
-### 3. Smaller Build Size
-
-Without MongoDB, your app will be:
-- **Windows**: ~150MB (vs 500MB with MongoDB)
-- **Mac**: ~200MB (vs 600MB with MongoDB)
-- **Linux**: ~180MB (vs 550MB with MongoDB)
-
-## Development Mode
-
-Test before building:
-
-```bash
-# Terminal 1: Start MongoDB
-mongod --dbpath ./data
+# Terminal 1: Start MongoDB (if installed)
+mongod --dbpath /path/to/data
 
 # Terminal 2: Start Backend
 cd backend
@@ -141,95 +140,376 @@ python server.py
 
 # Terminal 3: Start Frontend
 cd frontend
-npm start
+yarn start
 
-# Terminal 4: Start Electron (connects to running services)
+# Terminal 4: Start Electron (optional for desktop testing)
 cd electron
-npm start
+yarn dev
 ```
 
-## Troubleshooting
+**Development URLs:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8001
+- API Docs: http://localhost:8001/docs
 
-### Backend Not Starting
+---
 
-**Issue**: PyInstaller missing dependencies
+## Building for Production
 
-**Solution**: Add to PyInstaller command:
+### Step 1: Prepare Python Backend
+
 ```bash
---hidden-import <module_name>
---collect-all <package_name>
+cd backend
+
+# Clean previous builds
+rm -rf dist build *.spec
+
+# Build standalone executable
+pyinstaller --onefile --name server server.py --distpath ./dist
+
+# Verify output
+ls -l dist/server.exe
 ```
 
-### MongoDB Won't Start
+**Expected Output:**
+- `backend/dist/server.exe` (20-50 MB)
 
-**Issue**: Port 27017 already in use
+### Step 2: Build React Frontend
 
-**Solution**: Change port in `main.js`:
-```javascript
-'--port', '27018'  // Use different port
+```bash
+cd frontend
+
+# Clean previous builds
+rm -rf build
+
+# Build optimized production bundle
+yarn build
+
+# Verify output
+ls -l build/
 ```
 
-### App Crashes on Startup
+**Expected Output:**
+- `frontend/build/` directory with `index.html` and static assets
 
-**Issue**: Services not fully initialized
+### Step 3: Package Electron Application
 
-**Solution**: Increase timeout in `main.js`:
-```javascript
-setTimeout(() => resolve(), 15000); // Increase from 10s to 15s
+```bash
+cd electron
+
+# Build Windows installer
+yarn build
+
+# Alternative: Create unpacked directory (faster testing)
+yarn pack
 ```
+
+**Build Output:**
+```
+electron/dist/
+├── AMT Trading Bot Setup 1.0.0.exe  # NSIS Installer (~100-150 MB)
+└── win-unpacked/                     # Unpacked app directory
+    ├── AMT Trading Bot.exe
+    ├── resources/
+    │   ├── app.asar
+    │   ├── backend/
+    │   │   └── server.exe
+    │   └── frontend/
+    │       └── build/
+    └── ...
+```
+
+### Build Time Expectations
+
+- **Backend build**: 2-5 minutes
+- **Frontend build**: 1-3 minutes
+- **Electron packaging**: 3-7 minutes
+- **Total**: 10-15 minutes (first build may take longer)
+
+---
 
 ## Distribution
 
-### Code Signing (Optional but Recommended)
+### Installation Package
 
-**Windows**: Get code signing certificate
-```bash
-electron-builder --win --sign
+The final installer is located at:
+```
+electron/dist/AMT Trading Bot Setup 1.0.0.exe
 ```
 
-**Mac**: Use Apple Developer certificate
+### Installer Features
+
+- **Custom Installation Path**: Users can choose install directory
+- **Desktop Shortcut**: Created automatically
+- **Start Menu Entry**: Added for easy access
+- **Uninstaller**: Included for clean removal
+
+### Installation Steps (End User)
+
+1. Download `AMT Trading Bot Setup 1.0.0.exe`
+2. Double-click to run installer
+3. Choose installation directory (default: `C:\Program Files\AMT Trading Bot`)
+4. Wait for installation to complete
+5. Launch from desktop shortcut or Start Menu
+
+### First Run Setup
+
+1. **Configure API Keys** (if using live data):
+   - OpenRouter API Key (for AI analysis)
+   - Binance API Key & Secret (for live market data)
+
+2. **Choose Data Mode**:
+   - **Demo Mode**: Uses simulated market data (no API keys needed)
+   - **Live Mode**: Connects to Binance real-time data
+
+3. **MongoDB** (optional):
+   - If MongoDB is installed and running on port 27017, app will use it
+   - Otherwise, uses in-memory storage (data clears on app restart)
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. PyInstaller Build Fails
+
+**Error**: `ModuleNotFoundError` during backend build
+
+**Solution**:
 ```bash
-electron-builder --mac --sign
+# Install missing dependencies
+pip install -r requirements.txt
+
+# Ensure all imports are available
+python server.py  # Test server runs without errors
+
+# Rebuild
+pyinstaller --onefile --name server server.py --distpath ./dist
 ```
 
-### Auto-Updates (Optional)
+#### 2. Frontend Build Errors
 
-Add electron-updater for automatic updates:
+**Error**: `Module not found` or dependency issues
+
+**Solution**:
 ```bash
-npm install electron-updater
+cd frontend
+
+# Clear node_modules and reinstall
+rm -rf node_modules yarn.lock
+yarn install
+
+# Rebuild
+yarn build
 ```
 
-## File Sizes (Approximate)
+#### 3. Electron App Won't Start
 
-| Platform | With MongoDB | Without MongoDB (SQLite) |
-|----------|--------------|-------------------------|
-| Windows  | ~500 MB      | ~150 MB                |
-| macOS    | ~600 MB      | ~200 MB                |
-| Linux    | ~550 MB      | ~180 MB                |
+**Symptom**: App window opens but shows blank screen or error
 
-## Recommended Approach
+**Solution**:
+1. Check console logs in Electron developer tools
+2. Verify backend.exe exists in `resources/backend/`
+3. Verify frontend build exists in `resources/frontend/build/`
+4. Check that backend starts correctly:
+   ```bash
+   cd electron/dist/win-unpacked/resources/backend
+   ./server.exe
+   # Should start without errors
+   ```
 
-### For Distribution:
-1. **Use SQLite** instead of MongoDB (simpler, smaller)
-2. **Build for each platform separately** (requires respective OS)
-3. **Test thoroughly** on each platform before distribution
-4. **Consider code signing** for production releases
+#### 4. Backend Connection Errors
 
-### For Personal Use:
-1. Keep MongoDB if you prefer (full functionality)
-2. Build only for your platform
-3. No code signing needed
+**Error**: Frontend shows "Backend not available" or connection refused
 
-## Next Steps
+**Solution**:
+1. Ensure backend is running on port 8001:
+   ```bash
+   netstat -ano | findstr :8001
+   ```
+2. Check Windows Firewall isn't blocking port 8001
+3. Verify `config.js` is correctly detecting Electron environment
 
-1. Choose database approach (MongoDB or SQLite)
-2. Follow build steps above
-3. Test the generated installer
-4. Distribute to users
+#### 5. MongoDB Connection Issues
+
+**Symptom**: App runs but data doesn't persist
+
+**Solution**:
+- App automatically falls back to in-memory storage if MongoDB unavailable
+- To use MongoDB:
+  1. Install MongoDB Community Edition
+  2. Start MongoDB service: `net start MongoDB`
+  3. Verify running: `mongod --version`
+  4. Restart the app
+
+#### 6. Build Size Too Large
+
+**Issue**: Installer exceeds 200 MB
+
+**Solution**:
+```bash
+# Optimize backend build
+pyinstaller --onefile --strip --name server server.py
+
+# Optimize frontend build
+cd frontend
+GENERATE_SOURCEMAP=false yarn build
+
+# Use UPX compression (optional)
+# Download UPX from https://upx.github.io/
+# Place upx.exe in PATH
+# PyInstaller will automatically use it
+```
+
+---
+
+## Configuration
+
+### Application Icon
+
+Replace placeholder icon with custom icon:
+
+1. Create/obtain icon in multiple formats:
+   - `icon.ico` (256x256 for Windows)
+   - `icon.png` (512x512 source)
+
+2. Place in `electron/assets/`
+
+3. Rebuild: `yarn build`
+
+### Backend Port Configuration
+
+Default port is 8001. To change:
+
+**File**: `electron/main.js`
+```javascript
+env: {
+  ...process.env,
+  PORT: '8001'  // Change this
+}
+```
+
+**File**: `frontend/src/config.js`
+```javascript
+return 'http://localhost:8001';  // Change this
+```
+
+### Build Version Numbering
+
+**File**: `electron/package.json`
+```json
+{
+  "version": "1.0.0"  // Change this before building
+}
+```
+
+Version number appears in:
+- Installer filename
+- Windows Add/Remove Programs
+- App About dialog
+
+---
+
+## Advanced Configuration
+
+### Code Signing (Optional)
+
+For production distribution, sign the executable:
+
+1. Obtain code signing certificate
+2. Configure in `electron/package.json`:
+```json
+"win": {
+  "certificateFile": "path/to/cert.pfx",
+  "certificatePassword": "password"
+}
+```
+
+### Auto-Update (Optional)
+
+Implement electron-updater for automatic updates:
+
+```bash
+cd electron
+yarn add electron-updater
+```
+
+Configure update server in `main.js`.
+
+### Custom Splash Screen
+
+Add loading screen while backend starts:
+
+1. Create splash.html in `electron/`
+2. Load in `main.js` before main window
+3. Close when backend ready
+
+---
+
+## Build Checklist
+
+Before building production release:
+
+- [ ] Update version number in `electron/package.json`
+- [ ] Test in development mode (`yarn dev`)
+- [ ] Verify all dependencies installed
+- [ ] Build backend: `cd backend && pyinstaller ...`
+- [ ] Build frontend: `cd frontend && yarn build`
+- [ ] Test backend.exe runs standalone
+- [ ] Test frontend build serves correctly
+- [ ] Package Electron: `cd electron && yarn build`
+- [ ] Test installer on clean Windows machine
+- [ ] Verify app starts without errors
+- [ ] Test demo mode functionality
+- [ ] Test live mode with API keys (if applicable)
+- [ ] Test data persistence with MongoDB
+- [ ] Check Windows Defender doesn't flag executable
+- [ ] Document any manual setup steps for users
+
+---
+
+## File Size Reference
+
+**Typical build sizes:**
+- Backend executable: 30-50 MB
+- Frontend build: 5-10 MB
+- Electron framework: 80-120 MB
+- **Total installer**: 120-180 MB
+
+---
 
 ## Support
 
-For build issues, check:
-- PyInstaller logs in `backend/build/`
-- Electron builder logs in `electron/dist/`
-- Runtime logs in app's console (F12 in dev mode)
+For build issues or questions:
+
+1. Check Electron logs: `%APPDATA%\AMT Trading Bot\logs`
+2. Check backend logs: Console output in dev mode
+3. Review this document's Troubleshooting section
+4. Check GitHub Issues (if applicable)
+
+---
+
+## License
+
+MIT License - See LICENSE file for details
+
+---
+
+## Changelog
+
+### Version 1.0.0
+- Initial release
+- Windows x64 support
+- Demo and Live data modes
+- Volume profile visualization
+- AI analysis integration
+- WebSocket real-time updates
+
+---
+
+**Last Updated**: 2025
+**Build System Version**: 1.0
+**Electron Version**: 28.x
+**Node Version**: 18.x
+**Python Version**: 3.9+
