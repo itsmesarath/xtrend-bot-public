@@ -1,22 +1,19 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow;
 let backendProcess;
-let mongoProcess;
 
 // Paths for bundled executables
 const BACKEND_PATH = isDev 
   ? path.join(__dirname, '..', 'backend', 'server.py')
-  : path.join(process.resourcesPath, 'backend', 'server');
+  : path.join(process.resourcesPath, 'backend', 'server.exe');
 
-const MONGO_PATH = isDev
-  ? 'mongod' // Use system MongoDB in dev
-  : path.join(process.resourcesPath, 'mongodb', 'bin', 'mongod');
-
-const MONGO_DATA_PATH = path.join(app.getPath('userData'), 'mongodb-data');
+const PYTHON_PATH = isDev
+  ? 'python'
+  : path.join(process.resourcesPath, 'python', 'python.exe');
 
 // Start MongoDB
 function startMongoDB() {
