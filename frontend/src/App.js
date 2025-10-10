@@ -515,7 +515,10 @@ function App() {
                     data={marketData[selectedSymbol].candles || []}
                     volumeProfile={marketData[selectedSymbol].volume_profile}
                     currentPrice={marketData[selectedSymbol].price}
-                    onTimeframeChange={(tf) => fetchMarketData(selectedSymbol, true, tf)}
+                    onTimeframeChange={(tf) => {
+                      setCurrentTimeframes(prev => ({ ...prev, [selectedSymbol]: tf }));
+                      fetchMarketData(selectedSymbol, true, tf);
+                    }}
                   />
                 </CardContent>
               </Card>
