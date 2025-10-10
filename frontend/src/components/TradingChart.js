@@ -310,7 +310,19 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
       </div>
 
       {/* Chart Container */}
-      <div ref={chartContainerRef} className="rounded-lg overflow-hidden border border-slate-700" style={{ height: isFullscreen ? '80vh' : '600px' }} />
+      <div className="relative">
+        <div ref={chartContainerRef} className="rounded-lg overflow-hidden border border-slate-700" style={{ height: isFullscreen ? '80vh' : '600px' }} />
+        
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-white font-medium">Loading {timeframe} data...</span>
+            </div>
+          </div>
+        )}
+      </div>
       
       {/* Legend - Bottom Left */}
       <div className="absolute bottom-4 left-4 bg-slate-800/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700 text-xs space-y-1.5">
