@@ -818,16 +818,71 @@ async def save_config(config: APIConfig):
 @api_router.get("/config")
 async def get_config():
     """Get current configuration (without sensitive data)"""
-    global binance_fetcher, binance_simulator
+    global binance_fetcher, binance_simulator, use_demo_mode
     
-    data_source = "live" if binance_fetcher else "simulated"
+    # Determine actual data source
+    if binance_fetcher and binance_fetcher.running:
+        data_source = "live"
+    elif binance_simulator and binance_simulator.running:
+        data_source = "demo"
+    else:
+        data_source = "idle"
     
     return {
         "has_openrouter_key": bool(api_config.openrouter_key),
         "has_binance_key": bool(api_config.binance_key),
         "has_binance_secret": bool(api_config.binance_secret),
         "ai_model": api_config.ai_model,
-        "data_source": data_source
+        "data_source": data_source,
+        "use_demo_mode": use_demo_mode
+    }
+
+@api_router.post("/data-mode/toggle")
+async def toggle_data_mode():
+    """Toggle between demo mode and live Binance mode"""
+    global use_demo_mode
+    
+    if not api_config.binance_key or not api_config.binance_secret:
+        return {
+            "status": "error",
+            "message": "Binance API keys required to use any data mode"
+        }
+    
+    # Toggle mode
+    use_demo_mode = not use_demo_mode
+    mode_name = "Demo Mode (Real Prices)" if use_demo_mode else "Live Binance Mode"
+    
+    logger.info(f"Data mode toggled to: {mode_name}")
+    
+    # Restart data stream with new mode
+    asyncio.create_task(restart_data_stream())
+    
+    return {
+        "status": "success",
+        "use_demo_mode": use_demo_mode,
+        "mode": mode_name,
+        "message": f"Switched to {mode_name}. Data stream restarting..."
+    }
+
+@api_router.get("/data-mode")
+async def get_data_mode():
+    """Get current data mode"""
+    global use_demo_mode, binance_fetcher, binance_simulator
+    
+    mode = "demo" if use_demo_mode else "live"
+    
+    # Check actual status
+    is_running = False
+    if use_demo_mode:
+        is_running = binance_simulator and binance_simulator.running
+    else:
+        is_running = binance_fetcher and binance_fetcher.running
+    
+    return {
+        "mode": mode,
+        "use_demo_mode": use_demo_mode,
+        "is_running": is_running,
+        "description": "Demo Mode (Real Current Prices)" if use_demo_mode else "Live Binance WebSocket"
     }
 
 @api_router.post("/ai/toggle")
