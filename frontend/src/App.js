@@ -640,7 +640,7 @@ const VolumeProfileChart = ({ data }) => {
       </ScrollArea>
 
       {/* Legend */}
-      <div className="flex gap-4 text-xs">
+      <div className="flex gap-4 text-xs flex-wrap">
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 bg-cyan-500 rounded" />
           <span className="text-slate-400">POC</span>
@@ -652,6 +652,10 @@ const VolumeProfileChart = ({ data }) => {
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 bg-emerald-500 rounded" />
           <span className="text-slate-400">HVN</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-yellow-400 rounded animate-pulse" />
+          <span className="text-slate-400">Current Price</span>
         </div>
       </div>
     </div>
