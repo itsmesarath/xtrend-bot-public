@@ -11,12 +11,12 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Create chart with v5 API
+    // Create chart with v4 API
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: 450,
       layout: {
-        background: { color: '#0f172a' },
+        backgroundColor: '#0f172a',
         textColor: '#94a3b8',
       },
       grid: {
@@ -38,7 +38,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
     chartRef.current = chart;
 
-    // Add candlestick series - v5 API
+    // Add candlestick series - v4 API
     const candleSeries = chart.addCandlestickSeries({
       upColor: '#10b981',
       downColor: '#ef4444',
@@ -49,7 +49,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
 
     candleSeriesRef.current = candleSeries;
 
-    // Add volume series - v5 API
+    // Add volume series - v4 API
     const volumeSeries = chart.addHistogramSeries({
       color: '#334155',
       priceFormat: {
