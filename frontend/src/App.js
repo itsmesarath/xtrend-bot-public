@@ -53,12 +53,12 @@ function App() {
     fetchSignals();
     connectWebSocket();
     
-    // Initial fetch with full history
-    SYMBOLS.forEach(symbol => fetchMarketData(symbol, true));
+    // Initial fetch
+    SYMBOLS.forEach(symbol => fetchMarketData(symbol));
     
-    // Fetch market data periodically (without full history)
+    // Fetch market data periodically
     const interval = setInterval(() => {
-      SYMBOLS.forEach(symbol => fetchMarketData(symbol, false));
+      SYMBOLS.forEach(symbol => fetchMarketData(symbol));
     }, 5000);
     
     return () => {
