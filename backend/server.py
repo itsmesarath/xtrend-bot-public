@@ -445,6 +445,38 @@ async def restart_data_stream():
     # Start new stream
     await start_data_stream()
 
+# ==================== CANDLE AGGREGATION ====================
+
+def aggregate_candles(candles: list, timeframe_minutes: int) -> list:
+    """Aggregate 1-minute candles into higher timeframes"""
+    if not candles or timeframe_minutes == 1:
+        return candles
+    
+    aggregated = []
+    buffer = []
+    
+    for candle in candles:
+        buffer.append(candle)
+        
+        # Check if we have enough candles for aggregation
+        if len(buffer) >= timeframe_minutes:
+            # Create aggregated candle
+            agg_candle = {
+                "symbol": candle['symbol'],
+                "timestamp": buffer[0]['timestamp'],  # Use first candle's timestamp
+                "open": buffer[0]['open'],
+                "high": max(c['high'] for c in buffer),
+                "low": min(c['low'] for c in buffer),
+                "close": buffer[-1]['close'],
+                "volume": sum(c['volume'] for c in buffer),
+                "buy_volume": sum(c.get('buy_volume', 0) for c in buffer),
+                "sell_volume": sum(c.get('sell_volume', 0) for c in buffer)
+            }
+            aggregated.append(agg_candle)
+            buffer = []
+    
+    return aggregated
+
 # ==================== VOLUME PROFILE CALCULATIONS ====================
 
 async def calculate_volume_profile(symbol: str) -> Optional[VolumeProfile]:
