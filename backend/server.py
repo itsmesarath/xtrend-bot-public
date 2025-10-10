@@ -114,7 +114,8 @@ class MarketDataStore:
     def __init__(self):
         self.candles = defaultdict(lambda: deque(maxlen=2000))  # Store last 2000 candles (1440 for 24h at 1m)
         self.trades = defaultdict(lambda: deque(maxlen=10000))  # Store last 10000 trades per symbol
-        self.volume_profiles = {}  # Current volume profile per symbol
+        self.volume_profiles = {}  # Current volume profile per symbol (whole day)
+        self.volume_profiles_1h = {}  # 1-hour volume profile per symbol
         self.order_flow = {}  # Current order flow metrics per symbol
         self.cvd_values = defaultdict(lambda: deque(maxlen=500))  # CVD history
         self.ai_enabled = False
