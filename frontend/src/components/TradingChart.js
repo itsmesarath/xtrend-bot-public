@@ -138,26 +138,35 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice }) => {
     };
   }, [timeframe, isFullscreen]);
 
-  // Update candle data
+  // Update candle data with better handling
   useEffect(() => {
-    if (!candleSeriesRef.current || !data || data.length === 0) return;
+    if (!candleSeriesRef.current || !volumeSeriesRef.current || !data || data.length === 0) return;
 
-    const candleData = data.map(candle => ({
-      time: Math.floor(new Date(candle.timestamp).getTime() / 1000),
-      open: candle.open,
-      high: candle.high,
-      low: candle.low,
-      close: candle.close,
-    }));
+    try {
+      const candleData = data.map(candle => ({
+        time: Math.floor(new Date(candle.timestamp).getTime() / 1000),
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+      }));
 
-    const volumeData = data.map(candle => ({
-      time: Math.floor(new Date(candle.timestamp).getTime() / 1000),
-      value: candle.volume,
-      color: candle.close >= candle.open ? '#10b981' : '#ef4444',
-    }));
+      const volumeData = data.map(candle => ({
+        time: Math.floor(new Date(candle.timestamp).getTime() / 1000),
+        value: candle.volume,
+        color: candle.close >= candle.open ? '#10b98150' : '#ef444450',  // Semi-transparent
+      }));
 
-    candleSeriesRef.current.setData(candleData);
-    volumeSeriesRef.current.setData(volumeData);
+      candleSeriesRef.current.setData(candleData);
+      volumeSeriesRef.current.setData(volumeData);
+      
+      // Auto-fit content
+      if (chartRef.current) {
+        chartRef.current.timeScale().fitContent();
+      }
+    } catch (error) {
+      console.error('Error updating chart data:', error);
+    }
   }, [data]);
 
   // Draw volume profile levels
