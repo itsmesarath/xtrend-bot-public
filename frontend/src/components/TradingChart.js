@@ -143,7 +143,7 @@ const TradingChart = ({ symbol, data, volumeProfile, currentPrice, onTimeframeCh
         }
       }
     };
-  }, [timeframe, isFullscreen]);
+  }, [isFullscreen]); // Only recreate on fullscreen change, not timeframe
 
   // Track if initial fit has been done
   const initialFitDone = useRef(false);
