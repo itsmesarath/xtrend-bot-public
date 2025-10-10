@@ -112,14 +112,15 @@ class AIAnalysis(BaseModel):
 
 class MarketDataStore:
     def __init__(self):
-        self.candles = defaultdict(lambda: deque(maxlen=1000))  # Store last 1000 candles per symbol
-        self.trades = defaultdict(lambda: deque(maxlen=5000))  # Store last 5000 trades per symbol
+        self.candles = defaultdict(lambda: deque(maxlen=2000))  # Store last 2000 candles (1440 for 24h at 1m)
+        self.trades = defaultdict(lambda: deque(maxlen=10000))  # Store last 10000 trades per symbol
         self.volume_profiles = {}  # Current volume profile per symbol
         self.order_flow = {}  # Current order flow metrics per symbol
         self.cvd_values = defaultdict(lambda: deque(maxlen=500))  # CVD history
         self.ai_enabled = False
         self.last_ai_analysis = {}
         self.active_connections = []
+        self.aggregated_candles = defaultdict(lambda: {})  # Store aggregated timeframes
         
 market_store = MarketDataStore()
 api_config = APIConfig()
