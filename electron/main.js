@@ -49,33 +49,45 @@ function startBackend() {
   return new Promise((resolve, reject) => {
     console.log('Starting FastAPI backend...');
 
-    const pythonCommand = isDev ? 'python' : BACKEND_PATH;
+    const command = isDev ? 'python' : BACKEND_PATH;
     const args = isDev ? [BACKEND_PATH] : [];
+    
+    // Get user data path for app storage
+    const userDataPath = app.getPath('userData');
 
-    backendProcess = spawn(pythonCommand, args, {
+    backendProcess = spawn(command, args, {
       env: {
         ...process.env,
         MONGO_URL: 'mongodb://localhost:27017',
         DB_NAME: 'amt_trading_bot',
-        CORS_ORIGINS: 'http://localhost:3000',
-        PORT: '8001'
-      }
+        CORS_ORIGINS: '*',
+        PORT: '8001',
+        USER_DATA_PATH: userDataPath
+      },
+      cwd: isDev ? path.join(__dirname, '..', 'backend') : process.resourcesPath
     });
 
     backendProcess.stdout.on('data', (data) => {
-      console.log(`Backend: ${data}`);
-      if (data.toString().includes('Application startup complete')) {
+      const output = data.toString();
+      console.log(`Backend: ${output}`);
+      if (output.includes('Application startup complete') || output.includes('Uvicorn running')) {
         resolve();
       }
     });
 
     backendProcess.stderr.on('data', (data) => {
-      console.error(`Backend Error: ${data}`);
+      const error = data.toString();
+      console.error(`Backend Error: ${error}`);
+      // Don't reject on stderr as uvicorn logs to stderr
     });
 
     backendProcess.on('error', (error) => {
       console.error('Failed to start backend:', error);
       reject(error);
+    });
+
+    backendProcess.on('close', (code) => {
+      console.log(`Backend process exited with code ${code}`);
     });
 
     // Timeout after 15 seconds
