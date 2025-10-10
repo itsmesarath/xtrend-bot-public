@@ -219,11 +219,13 @@ function App() {
                     {connectionStatus === 'connected' ? 'Live' : connectionStatus === 'error' ? 'Error' : 'Connecting...'}
                   </span>
                 </div>
-                <div className={`px-2 py-1 rounded text-xs ${
-                  configStatus.data_source === 'live' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 'bg-amber-500/20 text-amber-400 border border-amber-500/50'
-                }`}>
-                  {configStatus.data_source === 'live' ? '🔴 Live Data' : '⚡ Demo Data'}
-                </div>
+                {isConfigured && (
+                  <div className={`px-2 py-1 rounded text-xs ${
+                    configStatus.data_source === 'live' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 'bg-gray-500/20 text-gray-400 border border-gray-500/50'
+                  }`}>
+                    {configStatus.data_source === 'live' ? '🔴 Live Data' : '⏳ Connecting...'}
+                  </div>
+                )}
               </div>
               
               {/* AI Toggle */}
