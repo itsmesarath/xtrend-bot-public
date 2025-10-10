@@ -314,8 +314,10 @@ function App() {
                       <AlertCircle className={`w-4 h-4 ${configStatus.data_source === 'live' ? 'text-emerald-400' : 'text-amber-400'}`} />
                       <AlertDescription className={`text-xs ${configStatus.data_source === 'live' ? 'text-emerald-300' : 'text-amber-300'}`}>
                         {configStatus.data_source === 'live' 
-                          ? '✅ Connected to Binance live market data' 
-                          : '⚡ Demo mode: Using simulated data. Add Binance API keys for real-time market data.'}
+                          ? '✅ Connected to Binance live market data - Streaming real-time 1m candles' 
+                          : !isConfigured
+                            ? '⚠️ Bot is idle. Add Binance API keys to start live data streaming.'
+                            : '⚠️ Connection issue. Check your API keys or wait for reconnection.'}
                       </AlertDescription>
                     </Alert>
                     
