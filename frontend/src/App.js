@@ -238,12 +238,30 @@ function App() {
                 </div>
                 {isConfigured && (
                   <div className={`px-2 py-1 rounded text-xs ${
-                    configStatus.data_source === 'live' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 'bg-gray-500/20 text-gray-400 border border-gray-500/50'
+                    dataMode === 'live' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50' : 
+                    dataMode === 'demo' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/50' :
+                    'bg-gray-500/20 text-gray-400 border border-gray-500/50'
                   }`}>
-                    {configStatus.data_source === 'live' ? '🔴 Live Data' : '⏳ Connecting...'}
+                    {dataMode === 'live' ? '🔴 Live Binance' : dataMode === 'demo' ? '📊 Demo Mode' : '⏳ Starting...'}
                   </div>
                 )}
               </div>
+              
+              {/* Data Mode Toggle */}
+              {isConfigured && (
+                <div className="flex items-center gap-3 bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700">
+                  <Label htmlFor="mode-toggle" className="text-sm text-slate-300 cursor-pointer">
+                    {useDemoMode ? 'Demo Mode' : 'Live Binance'}
+                  </Label>
+                  <Switch 
+                    id="mode-toggle"
+                    checked={!useDemoMode} 
+                    onCheckedChange={toggleDataMode}
+                    className="data-[state=checked]:bg-emerald-500"
+                  />
+                  {!useDemoMode && <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />}
+                </div>
+              )}
               
               {/* AI Toggle */}
               <div className="flex items-center gap-3 bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700">
