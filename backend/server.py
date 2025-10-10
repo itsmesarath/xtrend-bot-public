@@ -899,17 +899,39 @@ async def get_ai_status():
     return {"ai_enabled": market_store.ai_enabled}
 
 @api_router.get("/market/{symbol}")
-async def get_market_data(symbol: str):
-    """Get current market data for a symbol"""
-    candles = list(market_store.candles[symbol])[-50:]  # Last 50 candles
+async def get_market_data(symbol: str, timeframe: str = "1m", limit: int = 1000):
+    """Get current market data for a symbol with timeframe support"""
+    candles = list(market_store.candles[symbol])
+    
+    # Apply limit
+    if limit > 0:
+        candles = candles[-limit:]
+    
+    # TODO: Add timeframe aggregation for 5m, 15m, etc.
+    # For now, return 1m data
+    
     profile = market_store.volume_profiles.get(symbol)
     order_flow = market_store.order_flow.get(symbol)
     
     return {
         "symbol": symbol,
+        "timeframe": timeframe,
         "candles": candles,
         "volume_profile": profile.model_dump() if profile else None,
         "order_flow": order_flow.model_dump() if order_flow else None
+    }
+
+@api_router.get("/market/{symbol}/history")
+async def get_historical_data(symbol: str, timeframe: str = "1m"):
+    """Get full day's historical data"""
+    # Return all candles for the current session
+    candles = list(market_store.candles[symbol])
+    
+    return {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "candles": candles,
+        "count": len(candles)
     }
 
 @api_router.get("/signals", response_model=List[TradingSignal])
