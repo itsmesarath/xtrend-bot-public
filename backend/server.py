@@ -934,14 +934,30 @@ async def get_ai_status():
 @api_router.get("/market/{symbol}")
 async def get_market_data(symbol: str, timeframe: str = "1m", limit: int = 1000):
     """Get current market data for a symbol with timeframe support"""
-    candles = list(market_store.candles[symbol])
+    base_candles = list(market_store.candles[symbol])
+    
+    # Map timeframe to minutes
+    timeframe_map = {
+        "1m": 1,
+        "5m": 5,
+        "15m": 15,
+        "30m": 30,
+        "1h": 60,
+        "4h": 240,
+        "1d": 1440
+    }
+    
+    minutes = timeframe_map.get(timeframe, 1)
+    
+    # Aggregate if needed
+    if minutes > 1:
+        candles = aggregate_candles(base_candles, minutes)
+    else:
+        candles = base_candles
     
     # Apply limit
     if limit > 0:
         candles = candles[-limit:]
-    
-    # TODO: Add timeframe aggregation for 5m, 15m, etc.
-    # For now, return 1m data
     
     profile = market_store.volume_profiles.get(symbol)
     order_flow = market_store.order_flow.get(symbol)
@@ -956,9 +972,27 @@ async def get_market_data(symbol: str, timeframe: str = "1m", limit: int = 1000)
 
 @api_router.get("/market/{symbol}/history")
 async def get_historical_data(symbol: str, timeframe: str = "1m"):
-    """Get full day's historical data"""
-    # Return all candles for the current session
-    candles = list(market_store.candles[symbol])
+    """Get full day's historical data with timeframe support"""
+    base_candles = list(market_store.candles[symbol])
+    
+    # Map timeframe to minutes
+    timeframe_map = {
+        "1m": 1,
+        "5m": 5,
+        "15m": 15,
+        "30m": 30,
+        "1h": 60,
+        "4h": 240,
+        "1d": 1440
+    }
+    
+    minutes = timeframe_map.get(timeframe, 1)
+    
+    # Aggregate if needed
+    if minutes > 1:
+        candles = aggregate_candles(base_candles, minutes)
+    else:
+        candles = base_candles
     
     return {
         "symbol": symbol,
