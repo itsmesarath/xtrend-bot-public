@@ -226,7 +226,9 @@ class BinanceDataFetcher:
         for task in self.tasks:
             task.cancel()
         if self.client:
-            await self.client.close_connection()\n\nclass BinanceDataSimulator:
+            await self.client.close_connection()
+
+class BinanceDataSimulator:
     def __init__(self):
         self.symbols = ["BTCUSDT", "ETHUSDT", "LTCUSDT", "DOGEUSDT"]
         self.base_prices = {
