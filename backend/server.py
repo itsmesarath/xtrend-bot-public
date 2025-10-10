@@ -718,5 +718,11 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
-    binance_simulator.stop_streaming()
+    global binance_fetcher, binance_simulator
+    
+    if binance_fetcher:
+        await binance_fetcher.stop()
+    if binance_simulator:
+        binance_simulator.stop_streaming()
+    
     client.close()
