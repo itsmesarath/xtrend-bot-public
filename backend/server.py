@@ -1125,3 +1125,18 @@ async def shutdown_event():
         binance_simulator.stop_streaming()
     
     client.close()
+
+@api_router.get("/status")
+async def health_check():
+    """Health check endpoint for Docker"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "data_source": "live" if (binance_fetcher and binance_fetcher.running) else ("demo" if (binance_simulator and binance_simulator.running) else "idle")
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get('PORT', 8001))
+    logger.info(f"Starting FastAPI server on 0.0.0.0:{port}")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
