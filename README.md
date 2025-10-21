@@ -55,7 +55,7 @@ cd ../backend && pip install -r requirements.txt
 # Start services
 sudo supervisorctl restart all
 
-# Access at: https://trade-bot-36.preview.emergentagent.com
+# Access at: https://amt-trader.preview.emergentagent.com
 ```
 
 ### 💻 Desktop Application (Windows)

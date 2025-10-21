@@ -73,7 +73,7 @@ build.bat
 ## 🌐 Web Application (Current)
 
 ### Current Status
-- [x] Deployed at: https://trade-bot-36.preview.emergentagent.com
+- [x] Deployed at: https://amt-trader.preview.emergentagent.com
 - [x] Backend running
 - [x] Frontend running
 - [x] MongoDB connected
