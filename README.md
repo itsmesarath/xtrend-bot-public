@@ -184,7 +184,9 @@ build.bat
 
 ## Documentation
 
-- **[BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md)** - Complete build and packaging guide
+- **[DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)** - Docker container deployment guide
+- **[BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md)** - Windows desktop build guide
+- **[QUICK_START.md](QUICK_START.md)** - Quick reference for all platforms
 - **[electron/README.md](electron/README.md)** - Electron-specific documentation
 - **[LIVE_DATA_INTEGRATION.md](LIVE_DATA_INTEGRATION.md)** - Live data integration guide
 
