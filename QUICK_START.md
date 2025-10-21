@@ -114,7 +114,7 @@ cd electron && yarn dev
 
 ## Web Application (Current Deployment)
 
-Already running at: https://auction-market-3.preview.emergentagent.com
+Already running at: https://trade-bot-36.preview.emergentagent.com
 
 **To restart services:**
 ```bash
