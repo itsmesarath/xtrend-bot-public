@@ -25,6 +25,40 @@
 
 ---
 
+## Docker Deployment (Recommended)
+
+### Quick Start
+
+```bash
+# Start everything
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Access at:
+# Frontend: http://localhost
+# Backend: http://localhost:8001
+# API Docs: http://localhost:8001/docs
+```
+
+### Management
+
+```bash
+# Stop
+docker-compose down
+
+# Rebuild after changes
+docker-compose up -d --build
+
+# Check status
+docker-compose ps
+```
+
+See [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md) for complete guide.
+
+---
+
 ## For Developers (Building from Source)
 
 ### Prerequisites Check
