@@ -1,0 +1,46 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+LICENSE
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Electron (not needed for Docker)
+electron/
+
+# Testing
+tests/
+test_result.md
+*.test.js
+*.spec.js
+
+# Build artifacts
+dist/
+build/
+
+# Environment files (will be set via docker-compose)
+.env.local
+.env.*.local
