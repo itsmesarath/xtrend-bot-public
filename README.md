@@ -31,7 +31,21 @@ This application analyzes cryptocurrency markets (BTC, ETH, LTC, DOGE) using:
 
 ## Quick Start
 
-### Web Application
+### 🐳 Docker (Recommended - Easiest)
+
+```bash
+# Start all services with one command
+docker-compose up -d
+
+# Access the application
+# Frontend: http://localhost
+# Backend API: http://localhost:8001
+# API Docs: http://localhost:8001/docs
+```
+
+See **[DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)** for complete Docker guide.
+
+### 🌐 Web Application
 
 ```bash
 # Install dependencies
@@ -44,7 +58,7 @@ sudo supervisorctl restart all
 # Access at: https://your-domain.preview.emergentagent.com
 ```
 
-### Desktop Application (Windows)
+### 💻 Desktop Application (Windows)
 
 See **[BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md)** for complete build guide.
 
